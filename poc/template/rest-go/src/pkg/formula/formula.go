@@ -232,13 +232,3 @@ func convertDynamicValues(value string, sm map[string]string) string {
 	}
 	return value
 }
-
-func sanitizeMap(m map[string]interface{}) map[string]interface{} {
-	for k, v := range m {
-		_ = k
-		if v, ok := v.(map[string]interface{}); ok {
-			sanitizeMap(v)
-		}
-	}
-	return m
-}
