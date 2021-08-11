@@ -3,6 +3,7 @@ module formula
 go 1.14
 
 require (
+	github.com/Jeffail/gabs v1.4.0
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/go-openapi/strfmt v0.20.1 // indirect

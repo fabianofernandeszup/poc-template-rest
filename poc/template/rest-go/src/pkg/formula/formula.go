@@ -13,24 +13,26 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/Jeffail/gabs"
+
 	"gopkg.in/yaml.v2"
 )
 
 const (
-	dynamicPattern    = `\${{([^{}]+)}}`
-	expressionPattern = `(\$\[\[.*\]\])`
+	dynamicPattern    = `\{{([^{}]+)}}`
+	expressionPattern = `(\[\[.*\]\])`
 )
 
 type (
 	FormulaYAML struct {
-		Name               string  `yaml:"name"`
-		Description        string  `yaml:"description"`
-		Template           string  `yaml:"template"`
-		TemplateRelease    string  `yaml:"templateRelease"`
-		DockerImageBuilder string  `yaml:"dockerImageBuilder"`
-		Plugin             string  `yaml:"plugin"`
-		Inputs             []Input `yaml:"inputs"`
-		Steps              []Step  `yaml:"steps"`
+		Name               string    `yaml:"name"`
+		Description        string    `yaml:"description"`
+		Template           string    `yaml:"template"`
+		TemplateRelease    string    `yaml:"templateRelease"`
+		DockerImageBuilder string    `yaml:"dockerImageBuilder"`
+		Plugin             string    `yaml:"plugin"`
+		Inputs             []Input   `yaml:"inputs"`
+		Execution          Execution `yaml:"execution"`
 	}
 
 	Input struct {
@@ -39,6 +41,11 @@ type (
 		Default string   `yaml:"default"`
 		Type    string   `yaml:"type"`
 		Items   []string `yaml:"items,omitempty"`
+	}
+
+	Execution struct {
+		Workflow string `yaml:"workflow"`
+		Steps    []Step `yaml:"steps"`
 	}
 
 	Step struct {
@@ -63,8 +70,8 @@ func Run() {
 		y := FormulaYAML{}
 		err = yaml.Unmarshal([]byte(yamlFile), &y)
 		check(err)
-		sm := make(map[string]map[string]string)
-		for _, step := range y.Steps {
+		sm := make(map[string]string)
+		for _, step := range y.Execution.Steps {
 			fmt.Println("\n- - - - - - - - - - Step " + step.Name + " - - - - - - - - - - ")
 			// fmt.Println("\nName:", step.Name)
 			// fmt.Println("Method:", step.Method)
@@ -94,7 +101,7 @@ func Exists(path string) bool {
 	return true
 }
 
-func consumeAPI(method string, url string, headers map[string]string, data map[string]string, output map[string]string) map[string]string {
+func consumeAPI(method string, url string, headers map[string]string, data map[string]string, output map[string]string) string {
 	client := &http.Client{}
 
 	var jsonStr []byte
@@ -133,24 +140,25 @@ func consumeAPI(method string, url string, headers map[string]string, data map[s
 		}
 	}
 
-	m := make(map[string]string)
-	err = json.Unmarshal(bodyBytes, &m)
-	if err != nil {
-		return nil
+	if len(bodyBytes) > 0 {
+		jsonParsed, err := gabs.ParseJSON(bodyBytes)
+		check(err)
+		return jsonParsed.String()
 	}
-	return m
+
+	return ""
 }
 
-func convertMapDynamicValues(data map[string]string, sm map[string]map[string]string, mapType string) map[string]string {
+func convertMapDynamicValues(data map[string]string, sm map[string]string, mapType string) map[string]string {
 	for k, v := range data {
 		if isExpression(data[k], sm) {
 			data[k] = updateDynamicValues(data[k], sm)
-			re2 := regexp.MustCompile(`\$\[\[([^{}]+)\]\]`) // Inside Expression Pattern
+			re2 := regexp.MustCompile(`\[\[([^{}]+)\]\]`) // Inside Expression Pattern
 			match2 := re2.FindStringSubmatch(data[k])
 			data[k] = match2[1]
 		} else {
-			if strings.Contains(v, "${{") {
-				v = strings.Replace(v, "${{", "", -1)
+			if strings.Contains(v, "{{") {
+				v = strings.Replace(v, "{{", "", -1)
 				v = strings.Replace(v, "}}", "", -1)
 				data[k] = convertDynamicValues(v, sm)
 			}
@@ -167,18 +175,17 @@ func convertMapDynamicValues(data map[string]string, sm map[string]map[string]st
 	return data
 }
 
-func convertURLDynamicValues(url string, sm map[string]map[string]string) string {
-	if strings.Contains(url, "${{") {
+func convertURLDynamicValues(url string, sm map[string]string) string {
+	if strings.Contains(url, "{{") {
 		url = updateDynamicValues(url, sm)
 		fmt.Println("\nUpdated URL:", url)
 	}
 	return url
 }
 
-func updateDynamicValues(param string, sm map[string]map[string]string) string {
+func updateDynamicValues(param string, sm map[string]string) string {
 	re := regexp.MustCompile(dynamicPattern)
 	match := re.FindAllStringSubmatch(param, 10)
-	//fmt.Println("\nMatch:", match)
 	if len(match) != 0 {
 		for i := 0; i < len(match); i++ {
 			key := match[i][0]
@@ -190,8 +197,7 @@ func updateDynamicValues(param string, sm map[string]map[string]string) string {
 	return param
 }
 
-func isExpression(field string, sm map[string]map[string]string) bool {
-	//fmt.Println("\nField:", field)
+func isExpression(field string, sm map[string]string) bool {
 	re1 := regexp.MustCompile(expressionPattern)
 	match := re1.FindStringSubmatch(field)
 	if len(match) == 0 {
@@ -201,22 +207,23 @@ func isExpression(field string, sm map[string]map[string]string) bool {
 	}
 }
 
-func convertDynamicValues(value string, sm map[string]map[string]string) string {
+func convertDynamicValues(value string, sm map[string]string) string {
 	sv := strings.Split(value, ".")
-	//fmt.Println("\nSplitted Values:", sv)
 	if len(sv) != 0 {
 		if sv[0] == "inputs" {
 			localVariableName := sv[1]
 			value = os.Getenv(strings.ToUpper(localVariableName))
-			//fmt.Println("Step Data New Value (Input):", value)
 		}
 		if sv[0] == "steps" {
-			// TODO: Manage to get values on deepest level (currently only work for ${{step.1.2}}). e.g: ${{step.1.2.3.4}}
 			for k, _ := range sm {
 				if k == sv[1] {
-					ms := sm[k]
-					value = ms[sv[2]]
-					//fmt.Println("Step Data New Value (Step):", value)
+					path := strings.Replace(value, "steps."+sv[1]+".", "", -1)
+					//fmt.Println("Path:", path)
+					//fmt.Println("Json Stored:", sm[k])
+					jsonParsedObj, _ := gabs.ParseJSON([]byte(sm[k]))
+					value = jsonParsedObj.Path(path).String()
+					value = strings.Replace(value, "\"", "", -1)
+					//fmt.Println("Value:", value)
 				}
 			}
 		}
@@ -224,4 +231,14 @@ func convertDynamicValues(value string, sm map[string]map[string]string) string 
 		fmt.Println("ERROR: Splitting value")
 	}
 	return value
+}
+
+func sanitizeMap(m map[string]interface{}) map[string]interface{} {
+	for k, v := range m {
+		_ = k
+		if v, ok := v.(map[string]interface{}); ok {
+			sanitizeMap(v)
+		}
+	}
+	return m
 }
