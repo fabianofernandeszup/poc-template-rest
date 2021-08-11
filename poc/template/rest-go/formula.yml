@@ -1,75 +1,71 @@
-name: Manage User
-description: Manage user through the Go Rest API.
+name: List api rest
+description: List api rest description
 template: golang
 templateRelease: 2.16.2
 dockerImageBuilder: ritclizup/rit-go-builder
 plugin: rest
 inputs:
-  - label: "GoRest Token:"
-    name: rit_gorest_token
-    default: 52801824ec479d9610e79f444d9601c3adf67e19dfd46e54b794c29a9833581f
+  - label: "Verbose YML:"
+    name: rit_verbose
+    default: 'false'
+    type: bool
+    items:
+      - "false"
+      - "true"
+
+  - label: 'Id:'
+    name: rit_id
+    default: '4'
     type: text
 
   - label: 'Name:'
     name: rit_name
+    default: Fabiano
     type: text
-    default: Guillaume
 
-  - label: 'Gender:'
-    name: rit_gender
+  - label: 'Page:'
+    name: rit_page
     type: text
-    default: male
-    items:
-      - "male"
-      - "female"
-
-  - label: 'Email:'
-    name: rit_email
-    type: text
-    default: guillaume@test.com
+    default: '2'
 
 execution:
   workflow: rest
   steps:
-    - name: create_user
-      method: POST
-      url: https://gorest.co.in/public/v1/users
-      headers:
-        Content-Type: application/json
-        Accept: application/json
-        Authorization: "[[ Bearer {{inputs.rit_gorest_token}} ]]"
-      data:
-        name: {{inputs.rit_name}}
-        gender: {{inputs.rit_gender}}
-        email: {{inputs.rit_email}}
-        status: active
+    - name: userlist
+      method: GET
+      url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/
+      output:
+        format: table
+
+    - name: cep
+      method: GET
+      url: https://viacep.com.br/ws/38406-136/json/
       output:
         format: json
 
-    - name: get_user
-      method: GET
-      url: https://gorest.co.in/public/v1/users/{{steps.create_user.data.id}}
+    - name: usercreate
+      url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/
+      method: POST
       headers:
         Content-Type: application/json
-        Accept: application/json
-        Authorization: "[[ Bearer {{inputs.rit_gorest_token}} ]]"
-
-    - name: update_user
-      method: PATCH
-      url: https://gorest.co.in/public/v1/users/{{steps.create_user.data.id}}
-      headers:
-        Content-Type: application/json
-        Accept: "application/json"
-        Authorization: "[[ Bearer {{inputs.rit_gorest_token}} ]]"
       data:
-        name: "[[ Username with id {{steps.create_user.data.id}} ]]"
-        email: "[[ {{steps.create_user.data.id}}@gmail.com ]]"
-        status: active
+        name: "{{inputs.rit_name}}"
+        email: "chiaretto@gmail.com"
+        cep: "{{steps.cep.cep}}"
+        endereco: "[[ {{steps.cep.logradouro}}, {{steps.cep.localidade}} - {{steps.cep.uf}} ]]"
+      output:
+        format: json
 
-    - name: delete_user
-      method: DELETE
-      url: https://gorest.co.in/public/v1/users/{{steps.create_user.data.id}}
+    - name: userdetail
+      url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/{{steps.usercreate.id}}
+      method: GET
       headers:
-        Content-Type: application/json
-        Accept: application/json
-        Authorization: "[[ Bearer {{inputs.rit_gorest_token}} ]]"
+        token: "{{steps.usercreate.token}}"
+      output:
+        format: table
+
+    - name: userlist
+      url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/?page={{inputs.rit_page}}
+      method: GET
+      output:
+        format: table
