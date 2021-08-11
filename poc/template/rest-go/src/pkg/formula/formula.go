@@ -104,7 +104,7 @@ func consumeAPI(method string, url string, headers map[string]string, data map[s
 		jsonStr = j
 	}
 
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest(strings.ToUpper(method), url, bytes.NewBuffer(jsonStr))
 	check(err)
 
 	for k, v := range headers {
@@ -211,7 +211,7 @@ func convertDynamicValues(value string, sm map[string]map[string]string) string 
 			//fmt.Println("Step Data New Value (Input):", value)
 		}
 		if sv[0] == "steps" {
-			// TODO: Manage to get values on deepest level step.1.2.3.4 (currently only work for step.1.2)
+			// TODO: Manage to get values on deepest level (currently only work for ${{step.1.2}}). e.g: ${{step.1.2.3.4}}
 			for k, _ := range sm {
 				if k == sv[1] {
 					ms := sm[k]
