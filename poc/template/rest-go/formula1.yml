@@ -28,6 +28,14 @@ inputs:
     type: text
     default: guillaume@test.com
 
+  - label: "Verbose:"
+    name: rit_verbose
+    default: "false"
+    type: bool
+    items:
+      - "false"
+      - "true"
+
 execution:
   workflow: rest
   steps:
@@ -37,7 +45,7 @@ execution:
       headers:
         Content-Type: application/json
         Accept: application/json
-        Authorization: "[[ Bearer {{inputs.rit_gorest_token}} ]]"
+        Authorization: "Bearer {{inputs.rit_gorest_token}}"
       data:
         name: "{{inputs.rit_name}}"
         gender: "{{inputs.rit_gender}}"
@@ -52,7 +60,7 @@ execution:
       headers:
         Content-Type: application/json
         Accept: application/json
-        Authorization: "[[ Bearer {{inputs.rit_gorest_token}} ]]"
+        Authorization: "Bearer {{inputs.rit_gorest_token}}"
 
     - name: update_user
       method: PATCH
@@ -60,10 +68,10 @@ execution:
       headers:
         Content-Type: application/json
         Accept: "application/json"
-        Authorization: "[[ Bearer {{inputs.rit_gorest_token}} ]]"
+        Authorization: "Bearer {{inputs.rit_gorest_token}}"
       data:
-        name: "[[ Username with id {{steps.create_user.data.id}} ]]"
-        email: "[[ {{steps.create_user.data.id}}@gmail.com ]]"
+        name: "{{steps.create_user.data.name}} with id {{steps.create_user.data.id}}"
+        email: "{{steps.create_user.data.id}}@gmail.com"
         status: active
 
     - name: delete_user
@@ -72,4 +80,4 @@ execution:
       headers:
         Content-Type: application/json
         Accept: application/json
-        Authorization: "[[ Bearer {{inputs.rit_gorest_token}} ]]"
+        Authorization: "Bearer {{inputs.rit_gorest_token}}"

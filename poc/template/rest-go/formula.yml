@@ -35,7 +35,7 @@ execution:
       method: GET
       url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/
       output:
-        format: table
+        format: json
 
     - name: cep
       method: GET
@@ -50,9 +50,9 @@ execution:
         Content-Type: application/json
       data:
         name: "{{inputs.rit_name}}"
-        email: "chiaretto@gmail.com"
+        email: chiaretto@gmail.com
         cep: "{{steps.cep.cep}}"
-        endereco: "[[ {{steps.cep.logradouro}}, {{steps.cep.localidade}} - {{steps.cep.uf}} ]]"
+        endereco: "{{steps.cep.logradouro}}, {{steps.cep.localidade}} - {{steps.cep.uf}}"
       output:
         format: json
 
