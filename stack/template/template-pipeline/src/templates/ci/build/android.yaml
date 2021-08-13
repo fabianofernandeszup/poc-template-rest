@@ -1,0 +1,18 @@
+stages:
+  - build
+
+variables:
+  SDK_VERSION: "29"
+
+build:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/androidsdk:$SDK_VERSION
+  stage: build
+  allow_failure: false
+  script:
+    - ./gradlew build
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - build/
+  tags:
+    - ci

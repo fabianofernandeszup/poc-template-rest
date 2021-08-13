@@ -1,0 +1,32 @@
+stages:
+  - build
+
+variables: 
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  MAVEN_VERSION: "3.6.3-jdk11"
+  MAVEN_BUILD_PARAMETERS: "-s settings.xml"
+
+build:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/maven:$MAVEN_VERSION
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS install -DskipTests $MAVEN_BUILD_PARAMETERS
+    - echo $(mvn -q -s settings.xml -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec) > .version
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ./target
+      - ./.version
+      - ./app/target
+      - ./app/.version 
+  cache:
+    key: build-cache
+    paths:
+      - .m2/repository
+  except:
+    variables:
+      - $DISABLE_BUILD
+  tags:
+    - ci

@@ -1,0 +1,21 @@
+stages:
+  - package
+
+package:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/zip:3.0.0
+  stage: package
+  script:    
+    - cd ./build
+    - zip -r ../${CI_PROJECT_NAME}-${CI_PIPELINE_ID}.zip * 
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ${CI_PROJECT_NAME}-${CI_PIPELINE_ID}.zip
+  only:
+    - master
+    - tags
+  except:
+    variables:
+      - $DISABLE_PACKAGE
+  tags:
+    - ci

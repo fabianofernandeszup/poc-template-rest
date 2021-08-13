@@ -1,0 +1,5 @@
+include:
+  - local: /ci/build/maven.yaml
+  - local: /ci/test/maven.yaml
+  - local: /ci/inspection/quality.yaml
+  - local: /ci/inspection/security.yaml

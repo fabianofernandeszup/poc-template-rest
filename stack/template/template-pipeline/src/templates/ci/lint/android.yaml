@@ -1,0 +1,14 @@
+stages:
+  - lint
+
+variables:
+  SDK_VERSION: "29"
+
+lint:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/androidsdk:$SDK_VERSION
+  stage: lint
+  allow_failure: false
+  script:
+    - ./gradlew lint
+  tags:
+    - ci

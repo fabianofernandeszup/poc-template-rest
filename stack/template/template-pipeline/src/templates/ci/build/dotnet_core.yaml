@@ -1,0 +1,37 @@
+variables:
+  DOTNET_VERSION: "5.0"
+  DOTNET_PROJECT_PATH: "."
+  DOTNET_PROJECT_FILE: "" # csproj ou sln filename
+  DOTNET_RESTORE_PARAMS: ""
+  DOTNET_BUILD_PARAMS: "-c Release"
+
+stages:
+  - build
+
+.build_template:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/dotnet/sdk:$DOTNET_VERSION
+  stage: build
+  script:
+    - cd $DOTNET_PROJECT_PATH
+    - dotnet restore $DOTNET_RESTORE_PARAMS
+    - dotnet build $DOTNET_BUILD_PARAMS $DOTNET_PROJECT_FILE
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $DOTNET_PROJECT_PATH/bin
+      - src/**/bin
+      - ./**/bin
+  cache:
+    key: build
+    paths:
+      - /home/docker/.nuget/packages
+    policy: pull-push
+  tags:
+    - ci
+
+build:
+  extends: .build_template
+  except:
+    variables:
+      - $DISABLE_BUILD

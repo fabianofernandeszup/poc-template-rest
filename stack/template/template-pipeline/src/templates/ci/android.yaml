@@ -1,0 +1,8 @@
+variables:
+  SDK_VERSION: "29"
+
+include:
+  - local: /ci/build/android.yaml
+  - local: /ci/lint/android.yaml
+  - local: /ci/inspection/quality.yaml
+  - local: /ci/inspection/security.yaml

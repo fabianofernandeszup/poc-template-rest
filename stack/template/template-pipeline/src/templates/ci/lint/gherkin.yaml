@@ -1,0 +1,28 @@
+stages:
+  - lint
+  
+variables:
+  FEATURE_PATH: ""
+  RESULT_PATH: lint-result-$CI_PROJECT_NAME.txt
+  LINT_CONFIG_FILE: /home/docker/lint_config/.gherkin-lintrc
+
+gherkin:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/gherkin_lint:latest
+  stage: lint
+  before_script:
+    - FEATURE_PATH_YAML=`grep -A5 "feature:" .orange.yml | grep "path:" | awk '{print $2}'`
+    - if [[ $FEATURE_PATH != "" ]]; then FEATURE_PATH_YAML=$FEATURE_PATH;fi
+    - if [[ $FEATURE_PATH_YAML =~ ^\/+|^\\+ ]]; then FEATURE_PATH_YAML=${FEATURE_PATH_YAML:1}; fi
+    - if [[ $FEATURE_PATH_YAML =~ (.*)\/$ ]]; then FEATURE_PATH_YAML=$FEATURE_PATH_YAML** ; else FEATURE_PATH_YAML=$FEATURE_PATH_YAML/**; fi
+  script:
+    - echo "Docs - https://gitcorp.prod.cloud.ihf/OA4/docker_images/base/gherkin_lint/-/blob/master/README.md"
+    - gherkin-lint -c $LINT_CONFIG_FILE $FEATURE_PATH_YAML |& tee -a $RESULT_PATH && echo "Lint do gherkin realizado com sucesso e não foram encontrados ajustes na(s) feature(s)." || sed -i -e 's/\[.*\[0m    //;s/\[.*\[0m//;s/.*\/builds/\/builds/g;/build/s/\.feature.*/\.feature/g' $RESULT_PATH |& exit 1
+  artifacts:
+    expire_in: 3 day
+    paths:
+    - $RESULT_PATH
+    when: always
+  allow_failure: true
+  tags:
+    - ci
+    

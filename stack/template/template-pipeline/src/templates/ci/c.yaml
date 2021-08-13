@@ -1,0 +1,8 @@
+variables:
+  SONAR_VERSION: "enterprise"
+  SONAR_OPTS: "-Dproject.settings=sonar-project.properties -Dsonar.cpp.cppdepend.projectPath=$CI_PROJECT_DIR"
+  
+include:
+  - local: /ci/build/c.yaml
+  - local: /ci/inspection/quality.yaml
+  - local: /ci/package/conan.yaml

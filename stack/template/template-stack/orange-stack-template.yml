@@ -1,0 +1,54 @@
+ori: ori::product::132456-654654-654654-65464::asdaasd-654654-987987-987987
+stack:
+  template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // stack kotlin
+  inputs:
+    - label: 'Name Product:'
+      name: name_product
+      type: text
+
+    - label: 'Description:'
+      name: description
+      type: text
+resources:
+   -  template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // SCAFFOLD MICRONAUTE
+      inputs:
+        - label: 'Base name:'
+          value: {{inputs.name_product}}
+          name: base_name
+          type: text
+
+        - label: 'Fragments:'
+          name: fragments
+          type: list
+          itens:
+            - aws-secret-manager
+            - cache-redis
+            - dynamodb
+            - grpc-gateway
+            - ikafka
+            - logging
+            - metrics
+            - mysql
+            - postgres
+            - rest
+            - security
+            - tests
+            - tracing
+
+   -  template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // REPOSITORY PIPELINE
+      inputs:
+        - label: 'Language/technology:'
+          name: fragments
+          type: list
+          itens:
+            - android
+            - angular
+            - dotnet_core
+            - java_gradle
+            - java_maven
+            - kotlin_gradle
+            - nodejs
+            - python
+            - swagger_json
+            - swagger_yaml
+            - terraform_aws

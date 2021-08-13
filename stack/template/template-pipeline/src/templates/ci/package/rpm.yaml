@@ -1,0 +1,20 @@
+stages:
+  - package_rpm
+
+.package_rpm:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/rpm:latest
+  stage: package_rpm
+  script:
+    - echo "Generate RPM"
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $CI_PROJECT_NAME*.rpm
+  tags:
+    - ci
+
+package_rpm:
+  extends: .package_rpm
+  except:
+    variables:
+      - $DISABLE_PACKAGE

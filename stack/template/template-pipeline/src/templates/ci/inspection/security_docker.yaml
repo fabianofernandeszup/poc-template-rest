@@ -1,0 +1,42 @@
+stages:
+  - inspection
+
+.security_docker_template:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/docker_inspection:latest
+  stage: inspection
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_REGISTRY: itau-docker-base.depdes.artifactory.prod.cloud.ihf
+    IMAGE_TAR: ""
+    IMAGE_NAME: ""
+  services:
+    - alias: docker
+      name: itau-docker-base.depdes.artifactory.prod.cloud.ihf/docker:dind
+      command: ["--insecure-registry=itau-docker-base.depdes.artifactory.prod.cloud.ihf"]
+  only:
+    - branches
+    - tags
+  script: echo "Go Chapter!"
+  cache:
+    paths:
+      - .trivycache/
+  artifacts:
+    paths:
+      - security_docker_report.json
+      - security_docker_report.txt
+    reports:
+      container_scanning: security_docker_report_gitlab.json
+  tags:
+    - golden
+
+security_docker:
+  extends: .security_docker_template
+  variables:
+    IMAGE_NAME: ${CI_PROJECT_NAME}${IMAGE_NAME_SUFIX}
+    IMAGE_TAR: ${IMAGE_NAME}.tar
+  allow_failure: true
+  except:
+    variables:
+      - $DISABLE_INSPECTION_SECURITY
+      - $DISABLE_INSPECTION

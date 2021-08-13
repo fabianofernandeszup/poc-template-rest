@@ -1,0 +1,34 @@
+#
+# TEMPLATES
+#
+.plan:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/terraform_aws:${TERRAFORM_AWS_VERSION}
+  script: echo '#ChapterDevops'
+  tags:
+    - golden
+  allow_failure: true
+  only:
+    - tags
+    - branches
+
+.apply:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/terraform_aws:${TERRAFORM_AWS_VERSION}
+  variables:
+    TERRAFORM_COMMAND: apply
+  script: echo '#ChapterDevops'
+  when: manual
+  allow_failure: false
+  tags:
+    - golden
+  only:
+    - tags
+  dependencies: []
+  cache:
+    key: terraform-hcl-${CI_ENVIRONMENT_SLUG}
+    paths:
+     - .terraform.lock.hcl
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - output.json
+      - show.json

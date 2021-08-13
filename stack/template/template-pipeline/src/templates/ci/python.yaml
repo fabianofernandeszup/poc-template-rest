@@ -1,0 +1,5 @@
+include:
+  - local: /ci/build/python.yaml
+  - local: /ci/test/python.yaml
+  - local: /ci/inspection/quality.yaml
+  - local: /ci/inspection/security.yaml

@@ -1,0 +1,28 @@
+variables:
+  DOTNET_VERSION: "3.1"
+  DOTNET_PROJECT_PATH: src/
+
+stages:
+  - package
+
+.package_lambda:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/dotnet/sdk:$DOTNET_VERSION
+  stage: package
+  script:
+    - dotnet tool install -g Amazon.Lambda.Tools
+    - export PATH="$PATH:/home/docker/.dotnet/tools"
+    - cd $DOTNET_PROJECT_PATH
+    - dotnet lambda package 
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $DOTNET_PROJECT_PATH/bin
+  tags:
+    - ci
+
+package:
+  extends: .package_lambda
+  except:
+    variables:
+      - $DISABLE_PACKAGE

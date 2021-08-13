@@ -1,0 +1,23 @@
+ori: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987
+name: Template RDS
+description: Template RDS postgres or mysql
+inputs:
+  - label: 'Name:'
+    name: base-name
+    type: text
+
+  - label: 'Read Replica'
+    name: read-replica
+    type: bool
+    default: false
+    itens:
+      - true
+      - false
+      -
+  - label: 'Engine'
+    name: read-replica
+    type: bool
+    default: postgres
+    itens:
+      - postgres
+      - mysql

@@ -1,0 +1,47 @@
+build:
+    only:
+        - branches
+        - tags
+
+test:
+    only:
+        - branches
+        - tags
+
+inspection:
+    only:
+        - branches
+        - tags
+
+package:
+    only:
+        - master
+        - tags
+
+publish:
+    only:
+        - master
+        - tags
+        
+deploy_dev:
+    only:
+        - master
+        - tags
+
+deploy_hom:
+    only:
+        - tags
+    except:
+        - branches
+
+governance:
+    only:
+        - tags
+    except:
+        - branches
+
+deploy_prod:
+    only:
+        - tags
+    except:
+        - branches

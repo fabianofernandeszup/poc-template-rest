@@ -1,0 +1,22 @@
+stages:
+  - lint
+
+.lint_swagger:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/spectral
+  stage: lint
+  tags:
+    - ci
+  script:
+    - find . -type f -regex ".*/\(dev\|hom\)/.*\.\(json\|yml\|yaml\)" -exec spectral lint {} +;
+
+swagger_check:
+  extends: .lint_swagger
+  allow_failure: true
+  only:
+    - branches
+
+swagger:
+  extends: .lint_swagger
+  allow_failure: true
+  only:
+    - tags

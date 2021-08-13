@@ -1,0 +1,21 @@
+stages:
+  - test
+
+variables:
+  NODE_VERSION: 15.14.0
+  NODE_PROJECT_PATH: "."
+
+unit_test:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/node:$NODE_VERSION
+  stage: test
+  script:
+   - cd $NODE_PROJECT_PATH
+   - npm install --unsafe-perm
+   - npm test 
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $NODE_PROJECT_PATH/export
+  except:
+    variables:
+      - $DISABLE_TEST

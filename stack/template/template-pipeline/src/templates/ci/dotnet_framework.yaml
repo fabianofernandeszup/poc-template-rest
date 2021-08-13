@@ -1,0 +1,28 @@
+variables:
+  SONAR_OPTS: ""
+
+include: 
+  - local: /ci/build/dotnet_framework.yaml
+  - local: /ci/test/dotnet_framework.yaml
+  - local: /ci/inspection/quality.yaml
+  # - local: /ci/inspection/security.yaml
+
+
+# Customizado imagens e tags (runners)
+quality_check:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/sonar_inspection:dotnetframework
+  tags:
+    - ci-windows
+  cache:
+    key: sonar-cache
+    paths:
+      - C:\\Users\\ContainerAdministrator\\.sonar\\cache 
+
+quality:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/sonar_inspection:dotnetframework
+  tags:
+    - ci-windows
+  cache:
+    key: sonar-cache
+    paths:
+      - C:\\Users\\ContainerAdministrator\\.sonar\\cache 

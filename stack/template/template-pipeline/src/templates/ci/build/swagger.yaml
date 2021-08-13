@@ -1,0 +1,64 @@
+stages:
+  - build
+
+.build_template_gw:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/zip:3.0.0
+  stage: build
+  script:
+    - mkdir -p package package/apigateway
+    # Api Gateway
+    - for env in $environment;
+      do
+        mkdir package/apigateway/$env;
+        cp swagger.$SWAGGER_EXTENSION package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.authorizerUri}@'"$(eval echo \$$(echo $env)_authorizer_uri)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.authorizerItiUri}@'"$(eval echo \$$(echo $env)_iti_authorizer_uri)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.authorizerTokenUri}@'"$(eval echo \$$(echo $env)_authorizer_token_uri)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.authorizerCredentials}@'"$(eval echo \$$(echo $env)_authorizer_credentials)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.accountId}@'"$(eval echo \$$(echo $env)_account_id)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.region}@'"$(eval echo \$$(echo $env)_region)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.vpc_link}@'"$(eval echo \$$(echo $env)_vpc_link)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.authorizerLdapCorpUri}@'"$(eval echo \$$(echo $env)_authorizer_ldap_corp_uri)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+        sed -i 's@${ci.variable.name}@'"$(eval echo \$$(echo $env)_name)"'@g' package/apigateway/$env/swagger.$SWAGGER_EXTENSION;
+      done
+    # Final Package
+    - cd ./package/apigateway
+    - zip -r ${CI_PROJECT_NAME}-${CI_PIPELINE_ID}.zip *
+    - mv *.zip ../../
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ${CI_PROJECT_NAME}-${CI_PIPELINE_ID}.zip
+      - package/apigateway
+  cache: {}
+  except:
+    variables:
+      - $DISABLE_BUILD
+  tags:
+    - ci
+
+package_snapshot:
+  extends: .build_template_gw 
+  variables:
+    environment: dev
+    #dev_authorizer_uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:571571740496:function:nome_da_lambda/invocations
+    #dev_authorizer_credentials: arn:aws:iam::571571740496:role/nome_da_role
+    dev_account_id: 571571740496
+    dev_region: us-east-1    
+  only:
+    - branches
+
+package_candidate:
+  extends: .build_template_gw
+  variables:
+    environment: hom prd 
+    #hom_authorizer_uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:853597947141:function:nome_da_lambda/invocations
+    #hom_authorizer_credentials: arn:aws:iam::853597947141:role/nome_da_role
+    hom_account_id: 853597947141
+    hom_region: us-east-1     
+    #prd_authorizer_uri: arn:aws:apigateway:sa-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:sa-east-1:131542353379:function:nome_da_lambda/invocations
+    #prd_authorizer_credentials: arn:aws:iam::131542353379:role/nome_da_role
+    prd_account_id: 131542353379
+    prd_region: sa-east-1 
+  only:
+    - tags  

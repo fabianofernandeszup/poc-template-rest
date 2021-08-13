@@ -1,0 +1,22 @@
+include:
+  - local: /ci/lint/helm.yaml
+  - local: /ci/package/tgz.yaml
+  - local: /ci/publish/artifactory.yaml
+
+stages:
+  - lint                  # jobs: package (branches, tags)
+  - package               # jobs: package (tags)
+  - publish               # jobs: publish (tags)
+
+publish:
+  extends: .publish_tags
+  stage: publish
+  tags:
+    - golden
+  only:
+    - tags
+
+check-directory:
+  stage: .pre
+  script:
+    - if [[ $(expr match "$CI_PROJECT_NAMESPACE" 'OA4/helm-templates/.*$') !=  0 ]]; then echo "Valid helm template"; else echo "Helm template outside the standard group!"; exit 1; fi

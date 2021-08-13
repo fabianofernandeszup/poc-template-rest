@@ -1,0 +1,13 @@
+include:
+  - local: /ci/java_gradle.yaml
+  - local: /ci/publish/gradle_lib.yaml
+
+variables: 
+  GRADLE_VERSION: "jdk11"
+
+stages:
+  - build                 # jobs: build (branches e tags)
+  - test                  # jobs: unit_test (branches e tags)
+  - inspection            # jobs: quality_check (branches), quality (tags), security_check (branches), security (tags)
+  - package               # jobs: package (branches e tags)
+  - publish               # jobs: publish (tags)

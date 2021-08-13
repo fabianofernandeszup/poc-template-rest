@@ -1,0 +1,20 @@
+include:
+  - local: /ci/lint/docker.yaml
+  - local: /ci/build/docker_image.yaml
+  - local: /ci/test/docker_image.yaml
+  - local: /ci/inspection/security_docker.yaml
+  - local: /ci/publish/docker_base.yaml
+
+stages:
+  - lint                 # docker_best_practice (branches)
+  - build                # build (branches) ... utiliza extends.
+  - test                 # tests (branches) ... utiliza extends.
+  - inspection           # security (branches e tags) 
+  - publish              # ... extends, 
+  - publish_latest       # publish_latest (master e tags)
+
+# Custom Jobs
+security_docker:
+  variables:
+    IMAGE_TAR: ${CI_PROJECT_NAME}-${VERSION}.tar
+    IMAGE_NAME: ${CI_PROJECT_NAME}:${VERSION}

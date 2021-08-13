@@ -1,0 +1,5 @@
+include:
+  - local: /cd/deploy/kubernetes/dev.yaml
+  #- local: /cd/deploy/kubernetes/hom.yaml
+  #- local: /cd/governance/create_jira_ticket.yaml
+  #- local: /cd/deploy/kubernetes/prd.yaml

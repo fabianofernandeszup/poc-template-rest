@@ -1,0 +1,27 @@
+stages:
+  - deploy_prd
+  
+variables:
+  K8S_YAML: ""
+
+.deploy_prd:
+  stage: deploy_prd
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/deploy_kubernetes:latest
+  variables:
+    KUBECTL_COMMAND: "apply"
+  script: echo "Hello k8s"
+  environment:
+    name: prd
+  dependencies: []
+  cache: {}
+  tags:
+    - golden
+  only:
+    - tags
+  when: manual
+
+deploy_prd:
+  except:
+    variables:
+      - $DISABLE_DEPLOY_PRD
+  extends: .deploy_prd

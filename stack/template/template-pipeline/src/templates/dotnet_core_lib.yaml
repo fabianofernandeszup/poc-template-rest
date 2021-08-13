@@ -1,0 +1,11 @@
+include:
+  - local: /ci/dotnet_core.yaml
+  - local: /ci/package/dotnet_nuget.yaml
+  # - local: /ci/publish/dotnet_lib.yaml
+
+stages:
+  - build                 # jobs: build (branches e tags)
+  - test                  # jobs: unit_test (branches e tags)
+  - inspection            # jobs: quality_check (branches), quality (tags)
+  - package               # jobs: package (master e tags)
+  - publish               # jobs: publish (master e tags)

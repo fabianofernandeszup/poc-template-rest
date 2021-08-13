@@ -1,0 +1,45 @@
+stages:
+  - deploy_manifest
+  - deploy
+
+deploy_manifest:
+  stage: deploy_manifest
+  allow_failure: false
+  script:
+    - echo "Executando deploy. Iniciando downstream pipeline!"
+  when: manual
+  dependencies: []
+  cache: {}
+  only: 
+    - lab
+    - development
+    - release
+   # - master
+  tags:
+    - ci
+
+deploy_puppet_code:
+  stage: deploy
+  when: on_success
+  variables:
+    PUPPET_INSTANCE: opsworks
+  trigger:
+    project: Cloud-DevSecOps/Puppet/control
+    branch: ${CI_COMMIT_REF_NAME}
+    strategy: depend
+  only:
+    - lab
+    - development
+   # - production
+
+deploy_puppet_code_hom:
+  stage: deploy
+  when: on_success
+  variables:
+    PUPPET_INSTANCE: opsworks
+  trigger:
+    project: Cloud-DevSecOps/Puppet/control
+    branch: homolog
+    strategy: depend
+  only:
+    - release

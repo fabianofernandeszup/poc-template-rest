@@ -1,0 +1,168 @@
+{
+  "dockerImageBuilder": "ritclizup/rit-node-builder",
+  "inputs": [
+    {
+      "items": [
+        "android",
+        "angular",
+        "dotnet_core",
+        "java_gradle",
+        "java_maven",
+        "kotlin_gradle",
+        "nodejs",
+        "python",
+        "swagger_json",
+        "swagger_yaml",
+        "terraform_aws"
+
+      ],
+      "label": "Choose a language or technology: ",
+      "name": "rit_language_list",
+      "type": "text"
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "android"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "s3"
+      ]
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "dotnet_core"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "ecs",
+        "lambda"
+      ]
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "java_gradle"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "ecs",
+        "lambda",
+        "puppet"
+      ]
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "java_maven"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "ecs",
+        "lambda",
+        "puppet"
+      ]
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "kotlin_gradle"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "grpc_kubernetes"
+      ]
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "nodejs"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "lambda"
+      ]
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "python"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "ecs",
+        "lambda",
+        "puppet",
+        "s3"
+      ]
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "swagger_json"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "apigateway"
+      ]
+    },
+    {
+      "condition": {
+        "variable": "rit_language_list",
+        "operator": "==",
+        "value": "swagger_yaml"
+      },
+      "label": "Choose a service: ",
+      "name": "rit_service_list",
+      "type": "text",
+      "items": [
+        "apigateway"
+      ]
+    },
+
+    {
+      "name": "gitlab_repository",
+      "label": "Gitlab Repository (empty to skip)",
+      "type": "text",
+      "turorial": "Ex: gitlab.example.com/tanuki/awesome_project.git"
+    },
+    {
+      "name": "rit_gitlab_username",
+      "type": "CREDENTIAL_GITLAB_USERNAME"
+    },
+    {
+      "name": "rit_gitlab_token",
+      "type": "CREDENTIAL_GITLAB_TOKEN"
+    },
+    {
+      "name": "rit_gitlab_email",
+      "type": "CREDENTIAL_GITLAB_EMAIL"
+    }
+  ]
+}

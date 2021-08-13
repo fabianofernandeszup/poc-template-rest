@@ -1,0 +1,28 @@
+ori: ori::product::132456-654654-654654-65464::asdaasd-654654-987987-987987
+stack:
+  template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // stack kotlin
+  inputs:
+    name: "Cartao Verde"
+    description: "Projeto Cartao Verde"
+resources:
+  -  template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // SCAFFOLD MICRONAUTE
+     inputs:
+       - base-name: "Cartao Verde"
+       - fragments:
+           - grcp
+           - kafka
+           - postgres
+
+  -  template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // repository pipeline
+     inputs:
+       - type: "kotlin_gradle"
+
+  -  template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // RDS
+     inputs:
+       - base-name: "Cartao Verde"
+       - read-replica: true
+       - engine: postgres
+
+  -  template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // KAFKA
+     inputs:
+       - topic-name: "cartao-verde"

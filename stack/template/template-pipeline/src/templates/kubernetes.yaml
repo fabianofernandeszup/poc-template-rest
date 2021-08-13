@@ -1,0 +1,7 @@
+include:
+  #- local: /ci/kubernetes.yaml
+  - local: /cd/deploy_k8s.yaml
+
+stages:
+  #- lint             # jobs: kubernetes (branches, tags)
+  - deploy_dev       # jobs: kubernetes (branches, tags)

@@ -1,0 +1,33 @@
+variables:
+  DOTNET_VERSION: "5.0"
+  DOTNET_TESTS_PATH: test/
+  DOTNET_TESTS_FILE: "" # csproj ou sln filename
+
+stages:
+  - test
+
+unit_test:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/dotnet/sdk:$DOTNET_VERSION
+  stage: test
+  script:
+    - cd $DOTNET_TESTS_PATH
+    - dotnet add package coverlet.msbuild 
+    - dotnet test $DOTNET_TESTS_FILE /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $DOTNET_TESTS_PATH/coverage.opencover.xml
+      - $DOTNET_TESTS_PATH/bin
+      - src/**/bin
+      - ./**/bin
+  cache:
+    key: build
+    paths:
+      - /home/docker/.nuget/packages
+    policy: pull
+  tags:
+    - ci
+  except:
+    variables:
+      - $DISABLE_TEST

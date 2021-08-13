@@ -1,0 +1,9 @@
+variables:
+  SWAGGER_EXTENSION: yaml
+  
+include:
+  - local: /ci/build/swagger.yaml
+  - local: /ci/lint/yaml.yaml
+  - local: /ci/lint/swagger.yaml
+  - local: /ci/publish/artifactory.yaml
+  - local: /ci/publish/gitlab_pages_swagger.yaml

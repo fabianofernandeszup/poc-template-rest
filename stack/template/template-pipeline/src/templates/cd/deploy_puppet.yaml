@@ -1,0 +1,5 @@
+include:
+  - local: /cd/deploy/puppet/dev.yaml
+  - local: /cd/deploy/puppet/hom.yaml
+  - local: /cd/governance/create_jira_ticket.yaml
+  - local: /cd/deploy/puppet/prd.yaml

@@ -1,0 +1,22 @@
+stages:
+  - package
+
+package:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/conan:$CONAN_VERSION
+  stage: package
+  allow_failure: false
+  script:
+    - _version="latest"
+    - export SIGLA=`echo $CI_PROJECT_NAMESPACE | cut -d "/" -f 1` #Usar a variavel CI_PROJECT_ROOT_NAMESPACE no Gitlab: 13.2 
+    - conan export-pkg . $CI_PROJECT_PATH_SLUG/$_version@$SIGLA/rede -f
+    - mkdir data
+    - cp -R /home/docker/.conan/data/* data
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ./data
+  tags:
+    - ci
+  except:
+    variables:
+      - $DISABLE_PACKAGE

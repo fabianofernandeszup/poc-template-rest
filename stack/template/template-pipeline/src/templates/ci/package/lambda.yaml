@@ -1,0 +1,29 @@
+stages:
+  - package
+
+.package_lambda:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/zip:3.0.0
+  stage: package
+  script:
+    - zip -r ${CI_PROJECT_NAME}-${CI_PIPELINE_ID}.zip *
+      -x ".git*" -x "README.md" -x ./package/ -x *.sh
+      -x *.gradle -x sonar-project.properties -x coverage.xml
+      -x ./package -x ./tests -x ./test -x Dockerfile -x docker-compose.yml
+      -x fortify_report.pdf -x ./examples
+      -x functions.json -x package.json -x package-lock.json -x .orange.yml
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ${CI_PROJECT_NAME}-${CI_PIPELINE_ID}.zip
+      - '**/${CI_PROJECT_NAME}-${CI_PIPELINE_ID}.zip'
+  only:
+    - master
+    - tags
+  tags:
+    - ci
+
+package:
+  extends: .package_lambda
+  except:
+    variables:
+      - $DISABLE_PACKAGE

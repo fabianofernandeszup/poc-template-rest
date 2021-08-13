@@ -1,0 +1,22 @@
+stages:
+  - deploy_labs
+
+.deploy_labs:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/deploy_puppet:latest
+  stage: deploy_labs
+  script:
+    - echo "#GoChapter"
+  only:
+    - master
+  environment:
+    name: labs
+  dependencies: []
+  cache: {}
+  tags:
+    - golden
+
+deploy_labs:
+  except:
+    variables:
+      - $DISABLE_DEPLOY_LABS
+  extends: .deploy_labs

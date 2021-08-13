@@ -1,0 +1,36 @@
+stages:
+  - infra_hom
+
+
+.hom_plan:
+  extends: .plan
+  stage: infra_plan
+  only:
+    - tags
+    - branches
+  environment:
+    name: hom
+    # action: prepare
+
+hom_plan:
+  extends: .hom_plan
+  except:
+    variables:
+      - $DISABLE_INFRA_HOM
+      - $TERRAFORM_MODULE
+
+.hom_apply:
+  extends: .apply
+  stage: infra_hom
+  only:
+    - tags
+  environment:
+    name: hom
+
+hom_apply:
+  extends: .hom_apply
+  except:
+    variables:
+      - $DISABLE_INFRA_HOM
+      - $TERRAFORM_MODULE
+  dependencies: ["hom_plan"]

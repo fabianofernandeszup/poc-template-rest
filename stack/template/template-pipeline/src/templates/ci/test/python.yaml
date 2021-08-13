@@ -1,0 +1,40 @@
+variables:
+  PYTHON_VERSION: 3.8.2
+  PYTHON_REQUIREMENTS_TESTS: requirements_tests.txt
+  PYTHON_TEST_MODULE: unittest
+  PYTHON_PROJECT_PATH: "."
+  COVERAGE_OMIT: "marshmallow/*,tests/**,test/**,libs/**,setup.py"
+  COVERAGE_PATH: "./"
+  COVERAGE_CONFIG: "./.coveragerc"
+
+stages:
+  - test
+
+unit_test:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/python:$PYTHON_VERSION
+  stage: test
+  variables:
+    PYTHONPATH: ./libs
+  script:
+    - cd $PYTHON_PROJECT_PATH
+    - if test -f "$PYTHON_REQUIREMENTS_TESTS"; then pip install -r $PYTHON_REQUIREMENTS_TESTS -t libs; fi
+    - pip install --user coverage==4.5.4
+    - if test -f "$COVERAGE_CONFIG"; then python3 -m coverage run -m $PYTHON_TEST_MODULE; else python3 -m coverage run --source=$COVERAGE_PATH --omit=$COVERAGE_OMIT -m $PYTHON_TEST_MODULE; fi
+    - python3 -m coverage report || true
+    - python3 -m coverage xml || true
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ./.coverage
+      - ./coverage.xml
+  # cache:
+  #   key: build-cache
+  #   paths:
+  #     - ./libs
+  tags:
+    - ci
+  except:
+    variables:
+      - $DISABLE_TEST
