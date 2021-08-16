@@ -54,9 +54,9 @@ type (
 		Name    string                 `yaml:"name"`
 		Method  string                 `yaml:"method"`
 		URL     string                 `yaml:"url"`
-		Output  map[string]string      `yaml:"output"`
 		Headers map[string]string      `yaml:"headers,omitempty"`
 		Data    map[string]interface{} `yaml:"data,omitempty"`
+		Output  map[string]interface{} `yaml:"output"`
 	}
 )
 
@@ -82,9 +82,32 @@ func Verbose(v bool, i interface{}, m string) {
 	}
 }
 
-func Run() {
-	if Exists("formula.yml") {
+func Exists(filePath string) bool {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
 
+func FormulaYAMLValid(filePath string) bool {
+	if Exists(filePath) {
+		return true
+	}
+	f, _ := os.Open(filePath)
+	fi, err := f.Stat()
+	if err != nil {
+		return true
+	}
+
+	if fi.Size() == 0 {
+		return true
+	}
+
+	return false
+}
+
+func Run() {
+	if !FormulaYAMLValid("formula.yml") {
 		yamlFile, err := ioutil.ReadFile("formula.yml")
 		y := FormulaYAML{}
 		err = yaml.Unmarshal([]byte(yamlFile), &y)
@@ -101,36 +124,29 @@ func Run() {
 
 			if step.URL != "" {
 				step.URL = CheckDynamicValues(step.URL, sm).(string)
+				Verbose(verbose, step.URL, "\033[1mURL 👀\033[0m")
 			}
-			Verbose(verbose, step.URL, "\033[1mURL 👀\033[0m")
 
 			if len(step.Headers) != 0 {
 				step.Headers = CheckDynamicValues(step.Headers, sm).(map[string]string)
+				Verbose(verbose, step.Headers, "\033[1mHEADERS 👀\033[0m")
 			}
-			Verbose(verbose, step.Headers, "\033[1mHEADERS 👀\033[0m")
 
 			if len(step.Data) != 0 {
 				step.Data = CheckDynamicValues(step.Data, sm).(map[string]interface{})
+				Verbose(verbose, step.Data, "\033[1mDATA 👀\033[0m")
 			}
-			Verbose(verbose, step.Data, "\033[1mDATA 👀\033[0m")
 
 			response := CallAPI(step.Method, step.URL, step.Headers, step.Data, step.Output)
 			sm[step.Name] = response
 		}
 		fmt.Println("\033[0;34m\n🤖 END OF WORKFLOW EXECUTION 🚀\033[0m")
 	} else {
-		fmt.Println("ERROR: formula.yml file not found")
+		fmt.Println("ERROR: Invalid formula.yml file.")
 	}
 }
 
-func Exists(path string) bool {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-func CallAPI(method string, url string, headers map[string]string, data map[string]interface{}, output map[string]string) string {
+func CallAPI(method string, url string, headers map[string]string, data map[string]interface{}, output map[string]interface{}) string {
 	client := &http.Client{}
 
 	var jsonStr []byte
@@ -157,35 +173,66 @@ func CallAPI(method string, url string, headers map[string]string, data map[stri
 
 	if resp.StatusCode >= 300 {
 		fmt.Println("🔴 API Response StatusCode:", resp.StatusCode)
+		fmt.Println("ERROR: Please, check the URL and datas sent (with the 'Verbose' input) or if the service is available.")
+		defer func() {
+			if panicMessage := recover(); panicMessage != nil {
+				//DoNothing
+			}
+		}()
 		panic("")
 	} else {
 		fmt.Println("\n🟢 API Response StatusCode:", resp.StatusCode)
 		if len(bodyBytes) > 0 {
 			jsonParsed, err := gabs.ParseJSON(bodyBytes)
 			check(err, "ERROR: Couldn't store API response")
+			CheckOutput(bodyBytes, output)
 			return jsonParsed.String()
 		}
 	}
 
-	// for k, v := range output {
-	// 	if k == "format" {
-	// 		if v == "table" {
-	// 			// Can't use https://github.com/gosuri/uitable or https://github.com/lensesio/tableprinter without response struct
-	// 			// fmt.Println(string(bodyBytes))
-	// 		}
-	// 		if v == "json" {
-	// 			fmt.Println(string(bodyBytes))
-	// 		}
-
-	// 		if v == "template" {
-	// 			jsonParsed, _ := gabs.ParseJSON(bodyBytes)
-	// 			value := jsonParsed.Path("output.data.x").String()
-	// 			value = strings.Replace(value, "\"", "", -1)
-	// 		}
-	// 	}
-	// }
-
 	return ""
+}
+
+func CheckOutput(bodyBytes []byte, output map[string]interface{}) {
+	for k, v := range output {
+		if k == "format" {
+			if v == "table" {
+				// Can't use https://github.com/gosuri/uitable or https://github.com/lensesio/tableprinter without response struct
+			}
+			if v == "json" {
+				fmt.Println(string(bodyBytes))
+			}
+
+			if v == "template" {
+				output["template"] = GetOutputValues(bodyBytes, output["template"])
+				fmt.Println("\nOUTPUT:")
+				fmt.Println(output["template"])
+			}
+		}
+	}
+}
+
+func GetOutputValues(bodyBytes []byte, ot interface{}) interface{} {
+	var i interface{}
+	var value string
+
+	if TypeOf(ot) == "map[interface {}]interface {}" {
+		i := make(map[string]interface{})
+		for k, v := range ot.(map[interface{}]interface{}) {
+			i[k.(string)] = GetOutputValues(bodyBytes, v)
+		}
+		return i
+	}
+
+	if TypeOf(ot) == "string" {
+		path := ot.(string)
+		jsonParsed, _ := gabs.ParseJSON(bodyBytes)
+		value = jsonParsed.Path(path).String()
+		value = strings.Replace(value, "\"", "", -1)
+		return value
+	}
+
+	return i
 }
 
 func CheckDynamicValues(data interface{}, sm map[string]string) interface{} {
@@ -264,11 +311,11 @@ func UpdateDynamicValues(param string, sm map[string]string) string {
 func ConvertDynamicValues(value string, sm map[string]string) string {
 	sv := strings.Split(value, ".")
 	if len(sv) != 0 {
-		if sv[0] == "inputs" {
+		switch vt := sv[0]; vt {
+		case "inputs":
 			localVariableName := sv[1]
 			value = os.Getenv(strings.ToUpper(localVariableName))
-		}
-		if sv[0] == "steps" {
+		case "steps":
 			for k, _ := range sm {
 				if k == sv[1] {
 					prefix := "steps." + sv[1] + "."
@@ -278,9 +325,18 @@ func ConvertDynamicValues(value string, sm map[string]string) string {
 					value = strings.Replace(value, "\"", "", -1)
 				}
 			}
+		default:
+			fmt.Println("ERROR: Splitting Dynamic value")
 		}
 	} else {
 		fmt.Println("ERROR: Splitting Dynamic value")
 	}
+	return value
+}
+
+func ReadOutputValue(path string, json string) string {
+	jsonParsedObj, _ := gabs.ParseJSON([]byte(json))
+	value := jsonParsedObj.Path(path).String()
+	value = strings.Replace(value, "\"", "", -1)
 	return value
 }

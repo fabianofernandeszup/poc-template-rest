@@ -40,7 +40,6 @@
       "default": "2"
     }
   ],
-  "execution": ["REST", "gRPC", "formulas"],
   "steps": [
     {
       "name": "userlist",
