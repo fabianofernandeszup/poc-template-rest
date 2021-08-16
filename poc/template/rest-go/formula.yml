@@ -1,0 +1,83 @@
+name: List api rest
+description: List api rest description
+template: golang
+templateRelease: 2.16.2
+dockerImageBuilder: ritclizup/rit-go-builder
+plugin: rest
+inputs:
+  - label: "Verbose YML:"
+    name: rit_verbose
+    default: 'false'
+    type: bool
+    items:
+      - "false"
+      - "true"
+
+  - label: 'Id:'
+    name: rit_id
+    default: '4'
+    type: text
+
+  - label: 'Name:'
+    name: rit_name
+    default: Fabiano
+    type: text
+
+  - label: 'Page:'
+    name: rit_page
+    type: text
+    default: '2'
+
+execution:
+  workflow: rest
+  steps:
+    - name: userlist
+      method: GET
+      url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/
+      output:
+        format: json
+
+    - name: cep
+      method: GET
+      url: https://viacep.com.br/ws/38406-136/json/
+      output:
+        format: json
+
+    - name: usercreate
+      url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/
+      method: POST
+      headers:
+        Content-Type: application/json
+      data:
+        name: "{{inputs.rit_name}}"
+        email: chiaretto@gmail.com
+        cep: "{{steps.cep.cep}}"
+        endereco: "{{steps.cep.logradouro}}, {{steps.cep.localidade}} - {{steps.cep.uf}}"
+      output:
+        format: json
+
+    - name: userdetail
+      url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/{{steps.usercreate.id}}
+      method: GET
+      headers:
+        token: "{{steps.usercreate.token}}"
+      output:
+        format: table
+
+    - name: userlist
+      url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/?page={{inputs.rit_page}}
+      method: GET
+      output:
+        format: table
+
+    - name: test_template_cep
+      method: GET
+      url: https://viacep.com.br/ws/38408-214/json/
+      output:
+        format: template
+        template:
+            zip: cep
+            city: localidade
+            address:
+                street: logradouro
+                district: bairro

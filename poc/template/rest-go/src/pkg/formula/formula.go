@@ -90,7 +90,7 @@ func Exists(filePath string) bool {
 }
 
 func FormulaYAMLValid(filePath string) bool {
-	if Exists(filePath) {
+	if !Exists(filePath) {
 		return true
 	}
 	f, _ := os.Open(filePath)
