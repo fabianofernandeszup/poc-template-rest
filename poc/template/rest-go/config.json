@@ -1,0 +1,93 @@
+{
+  "name": "List api rest",
+  "description": "List api rest description",
+  "template": "node",
+  "templateRelease": "2.16.2",
+  "dockerImageBuilder": "ritclizup/rit-node-builder",
+  "inputs": [
+    {
+      "label": "Verbose JSON:",
+      "name": "rit_verbose",
+      "default": "false",
+      "type": "bool",
+      "items": [
+        "false",
+        "true"
+      ]
+    },
+    {
+      "label": "Id:",
+      "name": "rit_id",
+      "default": "4",
+      "type": "text"
+    },
+    {
+      "label": "Cep:",
+      "name": "rit_cep",
+      "default": "38406-136",
+      "type": "text"
+    },
+    {
+      "label": "Name:",
+      "name": "rit_name",
+      "default": "Fabiano",
+      "type": "text"
+    },
+    {
+      "label": "Page:",
+      "name": "rit_page",
+      "type": "text",
+      "default": "2"
+    }
+  ],
+  "steps": [
+    {
+      "name": "userlist",
+      "url": "https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/",
+      "output": {
+        "format": "table"
+      }
+    },
+    {
+      "name": "cep",
+      "url": "https://viacep.com.br/ws/${{inputs.rit_cep}}/json/",
+      "output": {
+        "format": "table"
+      }
+    },
+    {
+      "name": "usercreate",
+      "url": "https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/",
+      "method": "post",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "data": {
+        "name": "${{inputs.rit_name}}",
+        "email": "chiaretto@gmail.com",
+        "cep": "${{steps.cep.cep}}",
+        "endereco": "${{steps.cep.logradouro}}, ${{steps.cep.localidade}} - ${{steps.cep.uf}}"
+      },
+      "output": {
+        "format": "table"
+      }
+    },
+    {
+      "name": "userdetail",
+      "url": "https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/${{steps.usercreate.id}}",
+      "headers": {
+        "token": "${{steps.usercreate.token}}"
+      },
+      "output": {
+        "format": "table"
+      }
+    },
+    {
+      "name": "userlist",
+      "url": "https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/?page=${{inputs.rit_page}}",
+      "output": {
+        "format": "table"
+      }
+    }
+  ]
+}
