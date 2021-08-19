@@ -1,0 +1,6 @@
+redis:
+  uri: "redis://localhost"
+  caches:
+    headlines:
+    expire-after-write: "1h"
+    value-serializer: io.micronaut.jackson.serialize.JacksonObjectSerializer

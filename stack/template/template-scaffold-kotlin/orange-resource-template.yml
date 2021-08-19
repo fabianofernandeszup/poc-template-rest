@@ -1,23 +1,34 @@
 ori: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987
-name: Template RDS
-description: Template RDS postgres or mysql
+name: Template Scaffold Kotlin Micronaut
+description: Template Scaffold Kotlin Micronaut
 inputs:
-  - label: 'Name:'
-    name: base-name
+  - label: 'Base name:'
+    name: base_name
     type: text
 
-  - label: 'Read Replica'
-    name: read-replica
-    type: bool
-    default: false
+  - label: 'Description:'
+    name: description
+    type: text
+
+  - label: 'Fragments:'
+    name: fragments
+    type: list
     itens:
-      - true
-      - false
-      -
-  - label: 'Engine'
-    name: read-replica
-    type: bool
-    default: postgres
-    itens:
-      - postgres
+      - aws-secret-manager
+      - cache-redis
+      - dynamodb
+      - grpc-gateway
+      - ikafka
+      - logging
+      - metrics
       - mysql
+      - postgres
+      - rest
+      - security
+      - tests
+      - tracing
+
+  - label: 'Readme:'
+    default: '# Kotlin Micronaut Scaffold'
+    name: readme
+    type: text

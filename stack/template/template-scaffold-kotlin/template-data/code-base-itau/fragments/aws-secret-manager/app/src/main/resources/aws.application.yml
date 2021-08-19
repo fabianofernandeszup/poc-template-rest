@@ -1,0 +1,11 @@
+datasources:
+  default:
+    url: "$CLI_AWS_DB_URL"
+    driverClassName: "$CLI_AWS_DB_DRIVER"
+    username: "$CLI_AWS_DB_USERNAME"
+    schema-generate: NONE
+    dialect: "$CLI_AWS_DB_DIALECT"
+
+  orangestack-aws:
+    region: "$CLI_AWS_SECRET_REGION"
+    url: "$CLI_AWS_SECRET_URL"

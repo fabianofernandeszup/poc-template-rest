@@ -1,4 +1,5 @@
 {
+  "ori": "ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987",
   "dockerImageBuilder": "ritclizup/rit-node-builder",
   "inputs": [
     {

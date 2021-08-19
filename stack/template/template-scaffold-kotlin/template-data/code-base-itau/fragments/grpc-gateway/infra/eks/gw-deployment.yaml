@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $RIT_PARAMETER_APPLICATION_NAME-grpc-gw
+  labels:
+    k8s-app: $RIT_PARAMETER_APPLICATION_NAME-grpc-gw
+  namespace: eks-default-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: $RIT_PARAMETER_APPLICATION_NAME-grpc-gw
+  template:
+    metadata:
+      labels:
+        k8s-app: $RIT_PARAMETER_APPLICATION_NAME-grpc-gw
+    spec:
+      containers:
+      - env:
+        - name: GRPC_SERVER_ENDPOINT
+          value: $RIT_PARAMETER_APPLICATION_NAME-service:50051
+        - name: APP_NAME
+          value: grpcgateway-$RIT_PARAMETER_APPLICATION_NAME
+        - name: JAEGER_AGENT_HOST
+          value: jaeger-tracing-agent.observability
+        - name: JAEGER_SAMPLER_TYPE
+          value: const
+        - name: JAEGER_SAMPLER_PARAM
+          value: "1"
+        name: $RIT_PARAMETER_APPLICATION_NAME-grpc-gw
+        image: ${IMAGE_TAG_GATEWAY}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+          name: http
