@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/Jeffail/gabs"
+	"github.com/jedib0t/go-pretty/table"
 
 	"gopkg.in/yaml.v2"
 )
@@ -197,8 +198,60 @@ func CheckOutput(bodyBytes []byte, output map[string]interface{}) {
 	for k, v := range output {
 		if k == "format" {
 			if v == "table" {
-				// Can't use https://github.com/gosuri/uitable or https://github.com/lensesio/tableprinter without response struct
+				jsonParsed, _ := gabs.ParseJSON(bodyBytes)
+				str := jsonParsed.String()
+				if str[0] == '[' { // Means it's a []map[string]string
+					var amss []map[string]string
+					json.Unmarshal(bodyBytes, &amss)
+					hs := []string{}
+					headerRow := table.Row{"Index"}
+					keys := make(map[string]interface{})
+					for key := range amss[0] {
+						headerRow = append(headerRow, key)
+						keys[key] = []string{}
+						hs = append(hs, key)
+					}
+					t := table.NewWriter()
+					t.SetOutputMirror(os.Stdout)
+					t.AppendHeader(headerRow)
+					for _, mss := range amss {
+						for key, val := range mss {
+							keys[key] = append(keys[key].([]string), val)
+						}
+					}
+					for i := 0; i < len(amss); i++ {
+						tr := table.Row{i}
+						for j := 0; j < len(hs); j++ {
+							for key := range keys {
+								if hs[j] == key {
+									tr = append(tr, keys[key].([]string)[i])
+								}
+							}
+						}
+						t.AppendRow(tr)
+					}
+					t.SetStyle(table.StyleLight)
+					t.Render()
+
+				} else if str[0] == '{' { // Means it's a map[string]string
+					var mss map[string]string
+					json.Unmarshal(bodyBytes, &mss)
+					t := table.NewWriter()
+					t.SetOutputMirror(os.Stdout)
+					headerRow := table.Row{"index", "values"}
+					t.AppendHeader(headerRow)
+					for key, val := range mss {
+						t.AppendRow(table.Row{key, val})
+					}
+					t.SetStyle(table.StyleLight)
+					t.Render()
+
+				} else { // Means it's an unsupported interface{} for table
+					fmt.Println("Couldn't generate the table output.")
+					fmt.Println("String Output:", string(bodyBytes))
+				}
 			}
+
 			if v == "json" {
 				fmt.Println(string(bodyBytes))
 			}

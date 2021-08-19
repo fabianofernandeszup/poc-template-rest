@@ -35,13 +35,13 @@ execution:
       method: GET
       url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/
       output:
-        format: json
+        format: table
 
     - name: cep
       method: GET
       url: https://viacep.com.br/ws/38406-136/json/
       output:
-        format: json
+        format: table
 
     - name: usercreate
       url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/
