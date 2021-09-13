@@ -15,8 +15,8 @@ inputs:
 
   - label: 'Id:'
     name: rit_id
+    type: password
     default: '4'
-    type: text
 
   - label: 'Name:'
     name: rit_name
@@ -28,9 +28,15 @@ inputs:
     type: text
     default: '2'
 
+  - label: 'Deleta All:'
+    name: rit_deleta_all
+    type: text
+    default: '2'
+    confirm: true
+
 steps:
   - name: userlist
-    url: https://610fea3ec848c900171b3a02.mockapi.io/api/v1/users/
+    url: https://reousrcemanage.orangestac.com/api/v1/oris
     output:
       format: table
 

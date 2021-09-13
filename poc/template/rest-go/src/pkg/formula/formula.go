@@ -200,6 +200,9 @@ func CheckOutput(bodyBytes []byte, output map[string]interface{}) {
 			if v == "table" {
 				jsonParsed, _ := gabs.ParseJSON(bodyBytes)
 				str := jsonParsed.String()
+				isJSONString(str)
+				isJSON(str)
+				IsJSONRaw(str)
 				if str[0] == '[' { // Means it's a []map[string]string
 					var amss []map[string]string
 					json.Unmarshal(bodyBytes, &amss)
@@ -392,4 +395,21 @@ func ReadOutputValue(path string, json string) string {
 	value := jsonParsedObj.Path(path).String()
 	value = strings.Replace(value, "\"", "", -1)
 	return value
+}
+
+func isJSONString(s string) bool {
+	var js string
+	return json.Unmarshal([]byte(s), &js) == nil
+
+}
+
+func isJSON(s string) bool {
+	var js map[string]interface{}
+	return json.Unmarshal([]byte(s), &js) == nil
+
+}
+
+func IsJSONRaw(str string) bool {
+	var js json.RawMessage
+	return json.Unmarshal([]byte(str), &js) == nil
 }

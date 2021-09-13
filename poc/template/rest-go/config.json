@@ -18,8 +18,7 @@
     {
       "label": "Id:",
       "name": "rit_id",
-      "default": "4",
-      "type": "text"
+      "default": "4"
     },
     {
       "label": "Cep:",

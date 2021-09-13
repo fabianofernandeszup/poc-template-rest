@@ -1,0 +1,120 @@
+name: Stack Kotlin Micronaut
+description: Stack Kotlin Micronaut by Orange Stack
+inputs:
+  - label: 'Group Name:'
+    name: group
+    type: list
+    itens: {{ORANGE_GROUPS}}
+
+  - label: 'Name Product:'
+    name: name_product
+    type: text
+
+  - label: 'Description:'
+    name: description
+    type: text
+resources:
+  - step: scaffold
+    type: template
+    template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // SCAFFOLD MICRONAUTE
+    inputs:
+      - label: 'Base name:'
+        value: {{inputs.name_product}}
+        name: base_name
+        type: text
+
+      - label: 'Description:'
+        value: {{inputs.description}}
+        name: description
+        type: text
+
+      - label: 'Fragments:'
+        name: fragments
+        type: list
+        itens:
+          - aws-secret-manager
+          - cache-redis
+          - ikafka
+          - postgres
+          - rest
+          - security
+          - tests
+          - tracing
+
+  - step: plugins
+    type: template
+    template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // plugin kotlin
+    inputs:
+      - name: splunk_host
+        value: $SPLUK_HOST
+
+      # Inputs não mapeados serão usados os valores default, então só precisamos mapear esses inputs
+      # caso quisermos que o usuário tenha possibilidade de editar esse valor.
+
+  - step: pipeline
+    type: formula
+    formula:
+      repo: https://github.com/orangestack-com/formulas-pipeline/
+      release: 0.0.5
+      command: os create pipeline
+    inputs:
+      - name: language
+        value: kotlin_gradle
+
+    - step: rds
+      type: template
+      template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // RDS
+      inputs:
+        - label: 'Name:'
+          name: base-name
+          type: text
+
+        - label: 'Name space:'
+          name: namespace
+          default: 'orange'
+          type: text
+
+        - label: 'Read Replica'
+          name: read-replica
+          type: bool
+          default: false
+          itens:
+            - true
+            - false
+
+        - label: 'Engine'
+          name: engine
+          type: bool
+          default: postgres
+          itens:
+            - postgres
+            - mysql
+
+    - step: redis
+      type: template
+      template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 // REDIS
+      inputs:
+        - label: 'Name:'
+          name: base-name
+          type: text
+
+        - label: 'Name space:'
+          name: namespace
+          default: 'orange'
+          type: text
+
+        - label: 'Read Replica'
+          name: read-replica
+          type: bool
+          default: false
+          itens:
+            - true
+            - false
+
+        - label: 'Engine'
+          name: engine
+          type: bool
+          default: postgres
+          itens:
+            - postgres
+            - mysql

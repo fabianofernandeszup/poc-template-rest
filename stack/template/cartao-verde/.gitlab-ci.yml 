@@ -1,6 +1,0 @@
-variables:
-  DOCKER_REGISTRY: itau-docker-applications.depdes.artifactory.prod.cloud.ihf
-
-include:
-  - project: 'OA4/templates'
-    file: 'kotlin_grpc_gradle_kubernetes.yaml'

@@ -1,5 +1,0 @@
-{
-    "Parameters": {
-        "gwIngressHost": "$RIT_PARAMETER_APPLICATION_NAME-grpc-gw.cio6.prod.aws.cloud.ihf"
-    }
-}

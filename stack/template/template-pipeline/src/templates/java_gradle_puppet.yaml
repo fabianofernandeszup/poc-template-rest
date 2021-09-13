@@ -1,5 +1,0 @@
-include:
-  - local: /ci/java_gradle.yaml
-  - local: /ci/package/rpm.yaml
-  - local: /ci/publish/artifactory.yaml
-  - local: /cd/deploy_puppet.yaml

@@ -1,5 +1,0 @@
-include:
-  - local: /cd/update-aws-account.yaml
-
-stages:
-  - deploy_prd

@@ -1,8 +1,0 @@
-include:
-  - local: /ci/lint/puppet_manifest.yaml
-  - local: /cd/deploy/puppet_code/deploy_opsworks.yaml
-
-stages:
-  - lint
-  - deploy_manifest
-  - deploy
