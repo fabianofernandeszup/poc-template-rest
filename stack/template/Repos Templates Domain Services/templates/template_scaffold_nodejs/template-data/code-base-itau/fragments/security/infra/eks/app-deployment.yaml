@@ -1,0 +1,18 @@
+spec:
+  template:
+    spec:
+      containers:
+        - env:
+            - name: ENVIRONMENT
+              value: ${{sts_environment}}
+            - name: STS_ENVIRONMENT
+              value: ${{sts_environment}}
+            - name: STS_ENDPOINT
+              value: ${{sts_endpoint}}
+            - name: STS_AWS_SECRET_NAME
+              value: ${{sts_aws_secret_name}}
+            - name: STS_CLIENT_ID
+              value: ${{sts_client_id}}
+          name: $RIT_PARAMETER_APPLICATION_NAME
+          image: ${IMAGE_TAG}
+          imagePullPolicy: Always

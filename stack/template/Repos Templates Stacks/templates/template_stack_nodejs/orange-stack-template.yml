@@ -1,0 +1,33 @@
+name: Stack Node JS
+description: Stack Kotlin Micronaut by Orange Stack
+type: stack
+resources:
+  - step: scaffold
+    type: template
+    template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987989 # SCAFFOLD NODEJS
+
+  - step: pipeline
+    type: formula
+    formula:
+      repo: https://github.com/orangestack-com/formulas-pipeline/
+      release: 0.0.5
+      command: os create pipeline
+
+  - step: pipeline
+    type: formula
+    formula:
+      repo: https://github.com/orangestack-com/formulas-pipeline/
+      release: 0.0.5
+      command: os create pipeline
+
+  - step: rds
+    type: template
+    template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 # RDS
+    # https://github.com/fabianofernandeszup/template-rds
+
+  - step: s3bucket
+    type: formula
+    formula:
+      repo: https://github.com/orangestack-com/catalog-formulas/
+      release: 0.0.5
+      command: os catalog upload s3

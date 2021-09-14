@@ -1,0 +1,17 @@
+datasources:
+  default:
+    url: ${JDBC_URL:`jdbc:postgresql://localhost:5432/postgresdb`}
+    driverClassName: org.postgresql.Driver
+    username: ${JDBC_USER:postgresuser}
+    password: ${JDBC_PASSWORD:postgrespassword}
+    schema-generate: CREATE_DROP
+    dialect: POSTGRES
+jpa:
+  default:
+    entity-scan:
+      packages: 'com.itau.micronaut.adapters.persistence.entities'
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        show_sql: true    

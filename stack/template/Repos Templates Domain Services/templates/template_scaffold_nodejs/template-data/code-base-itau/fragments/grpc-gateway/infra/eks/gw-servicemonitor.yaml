@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+  labels:
+    release: kube-prometheus-stack
+  name: $RIT_PARAMETER_APPLICATION_NAME-grpc-gw
+  namespace: eks-default-namespace
+spec:
+  endpoints:
+  - interval: 30s
+    path: /metrics
+    scrapeTimeout: 15s
+    targetPort: 8081
+  selector:
+    matchLabels:
+      k8s-app: $RIT_PARAMETER_APPLICATION_NAME-grpc-gw
