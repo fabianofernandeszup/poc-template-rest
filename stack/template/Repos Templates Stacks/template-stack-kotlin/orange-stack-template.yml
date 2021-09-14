@@ -1,5 +1,6 @@
 name: Stack Kotlin Micronaut
 description: Stack Kotlin Micronaut by Orange Stack
+type: stack
 resources:
   - step: scaffold
     type: template

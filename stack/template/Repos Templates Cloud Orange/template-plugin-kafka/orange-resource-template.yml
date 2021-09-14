@@ -1,0 +1,7 @@
+ori: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987
+name: Template Kafka
+description: Template Kafka
+inputs:
+  - label: 'Topic Name:'
+    name: topic-name
+    type: text
