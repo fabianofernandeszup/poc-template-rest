@@ -1,0 +1,33 @@
+name: Template Scaffold Kotlin Micronaut
+description: Template Scaffold Kotlin Micronaut
+inputs:
+  - label: 'Base name:'
+    name: base_name
+    type: text
+
+  - label: 'Description:'
+    name: description
+    type: text
+
+  - label: 'Fragments:'
+    name: fragments
+    type: list
+    itens:
+      - aws-secret-manager
+      - cache-redis
+      - dynamodb
+      - grpc-gateway
+      - ikafka
+      - logging
+      - metrics
+      - mysql
+      - postgres
+      - rest
+      - security
+      - tests
+      - tracing
+
+  - label: 'Readme:'
+    default: '# Kotlin Micronaut Scaffold'
+    name: readme
+    type: text

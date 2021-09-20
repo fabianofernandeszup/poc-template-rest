@@ -1,0 +1,11 @@
+include:
+  - local: /ci/terraform.yaml
+  - local: /cd/terraform_aws.yaml
+
+stages:
+  - lint             # jobs: terraform (branches, tags)
+  - infra_plan       # jobs: dev_plan (branches), hom_plan (branches, tags) e prd_plan (branches, tags)
+  - infra_dev        # jobs: dev (master)
+  - infra_hom        # jobs: hom_apply (tags)
+  - governance       # jobs: create_jira_ticket (tags)
+  - infra_prd        # jobs: prd_apply (tags)

@@ -1,0 +1,30 @@
+variables:
+  DOTNET_VERSION: "4.8"
+  DOTNET_TESTS_PATH: test/
+  DOTNET_TESTS_FILE: "" # csproj, sln or vbproj
+  DOTNET_TESTS_DLL_FILE: "" # dll files
+
+stages:
+  - test
+
+unit_test:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/dotnet/framework/sdk:$DOTNET_VERSION
+  stage: test
+  script:
+    - cd $env:DOTNET_TESTS_PATH
+    - msbuild.exe .\${env:DOTNET_TEST_FILE} /t:test /p:Configuration=Release
+    - vstest.console.exe .\$env:{DOTNET_TEST_DLL_FILE} /InIsolation /Enablecodecoverage /Logger:trx
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $DOTNET_TESTS_PATH/
+      - $DOTNET_TESTS_PATH/bin
+      - src/**/bin
+      - ./**/bin
+      - ./**/*.trx
+  tags:
+    - ci-windows
+  except:
+    variables:
+      - $DISABLE_TEST

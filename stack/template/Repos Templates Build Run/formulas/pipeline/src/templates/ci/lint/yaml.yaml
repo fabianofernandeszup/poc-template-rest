@@ -1,0 +1,14 @@
+stages:
+  - lint
+  
+variables:
+  YAML_FILE: swagger.yaml
+  
+yaml:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/node:15.8.0
+  stage: lint
+  tags:
+    - ci
+  script:
+    - npm install -g yaml-lint
+    - yamllint $YAML_FILE

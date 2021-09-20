@@ -1,0 +1,22 @@
+stages:
+  - deploy_dev
+
+.deploy_dev:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/deploy_puppet:latest
+  stage: deploy_dev
+  script:
+    - echo "#GoChapter"
+  only:
+    - master
+  environment:
+    name: dev
+  dependencies: []
+  cache: {}
+  tags:
+    - golden
+
+deploy_dev:
+  except:
+    variables:
+      - $DISABLE_DEPLOY_DEV
+  extends: .deploy_dev

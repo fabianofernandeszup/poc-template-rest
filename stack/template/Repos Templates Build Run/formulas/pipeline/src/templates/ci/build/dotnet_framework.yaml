@@ -1,0 +1,28 @@
+variables:
+  VERSION: "4.8"
+  DOTNET_PROJECT_PATH: "."
+  DOTNET_PROJECT_FILE: "" # csproj, sln or vbproj
+
+stages:
+  - build
+
+.build_template:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/dotnet/framework/sdk:$VERSION
+  stage: build
+  script:
+    - cd $env:DOTNET_PROJECT_PATH
+    - msbuild.exe .\${env:DOTNET_PROJECT_FILE} /t:build /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath=package
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $DOTNET_PROJECT_PATH/package
+      - ./**/bin
+  tags:
+    - ci-windows
+    
+build:
+  extends: .build_template
+  except:
+    variables:
+      - $DISABLE_BUILD

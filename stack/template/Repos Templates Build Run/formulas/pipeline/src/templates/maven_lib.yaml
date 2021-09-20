@@ -1,0 +1,12 @@
+include:
+  - local: /ci/java_maven.yaml
+  - local: /ci/publish/maven_lib.yaml
+
+variables: 
+  MAVEN_VERSION: "3.6.3-jdk8"
+
+stages:
+  - build                 # jobs: build (branches)
+  - test                  # jobs: unit_test (branches)
+  - inspection            # jobs: quality_check (branches), quality (master)
+  - publish               # jobs: publish (master)

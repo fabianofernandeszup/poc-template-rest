@@ -1,0 +1,32 @@
+stages:
+  - deploy_manifest
+  - deploy
+
+deploy_manifest:
+  stage: deploy_manifest
+  allow_failure: false
+  script:
+    - echo "Executando deploy. Iniciando downstream pipeline!"
+  when: manual
+  dependencies: []
+  cache: {}
+  only: 
+    - lab
+    - development
+    - homolog
+   # - production
+  tags:
+    - ci
+
+deploy_puppet_code:
+  stage: deploy
+  when: on_success
+  trigger:
+    project: BF1/Puppet/pe_control
+    branch: ${CI_COMMIT_REF_NAME}
+    strategy: depend
+  only:
+    - lab
+    - development
+    - homolog
+   # - production

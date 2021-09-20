@@ -1,0 +1,8 @@
+variables:
+  JSON_FILE: sfn_definitions.json
+  
+include:
+  - local: /ci/build/step_functions.yaml
+  - local: /ci/lint/json.yaml
+  - local: /ci/package/step_functions.yaml
+  - local: /ci/publish/artifactory.yaml

@@ -1,0 +1,13 @@
+stages:
+  - lint
+
+variables:
+  PROTO_PATH: src/main/proto
+
+protolint:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/protolint
+  stage: lint
+  tags: 
+    - ci
+  script:
+    - protolint lint -plugin custom_rules -reporter json $PROTO_PATH

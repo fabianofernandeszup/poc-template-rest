@@ -1,0 +1,15 @@
+stages:
+  - lint
+  
+.lint_dockerfile:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/hadolint:latest
+  stage: lint
+  script: 
+    - find . -type f \( -name "*Dockerfile*" -o -name "*dockerfile*" \) -not -path ".git/*" -exec hadolint {} +;
+    - echo "Docs - https://github.com/hadolint/hadolint/wiki"
+    - echo "     - https://github.com/koalaman/shellcheck/wiki"
+  tags:
+    - ci
+
+dockerfile:
+  extends: .lint_dockerfile

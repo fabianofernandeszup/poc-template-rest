@@ -1,0 +1,32 @@
+stages:
+  - inspection
+
+variables:
+  FORTIFY_VERSION: latest-base
+
+.fortify_template:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/fortify_analysis:latest
+  stage: inspection
+  script:
+    - python /orangepipes/main.py
+  allow_failure: false
+  tags:
+    - golden
+  cache:
+    key: build-cache
+  except:
+    variables:
+      - $DISABLE_INSPECTION_SECURITY
+      - $DISABLE_INSPECTION
+
+security_check:
+  extends: .fortify_template
+  allow_failure: true
+  only:
+    - branches
+
+security:
+  extends: .fortify_template
+  allow_failure: true
+  only:
+    - tags

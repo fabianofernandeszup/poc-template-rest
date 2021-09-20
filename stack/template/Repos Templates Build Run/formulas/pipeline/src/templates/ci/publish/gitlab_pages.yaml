@@ -1,0 +1,18 @@
+stages:
+  - publish
+
+pages:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/alpine:latest
+  stage: publish
+  script:
+    - echo 'Chapter Devops > Gitlab Pages'
+  only:
+    - tags
+  artifacts:
+    paths:
+      -  public
+  except:
+    variables:
+      - $DISABLE_GITLAB_PAGES
+  tags:
+    - ci

@@ -1,0 +1,24 @@
+stages:
+  - deploy_prd
+
+.deploy_prd:
+  stage: deploy_prd
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/update-aws-account:0.0.1
+  variables:
+    LOG_LEVEL: "DEBUG"
+  script:
+    - echo Lambda
+  environment:
+    name: dev
+  dependencies: []
+  cache: {}
+  tags:
+    - golden
+  only:
+    - tags
+
+deploy_prd:
+  except:
+    variables:
+      - $DISABLE_DEPLOY_PRD
+  extends: .deploy_prd

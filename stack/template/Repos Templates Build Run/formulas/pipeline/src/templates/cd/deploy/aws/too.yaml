@@ -1,0 +1,48 @@
+stages:
+  - deploy_tools
+
+# TRADICIONAL
+.deploy_too:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/deploy_aws:latest
+  stage: deploy_too
+  allow_failure: false
+  script:
+    - echo "#GoChapter"
+  only:
+    - tags
+  environment:
+    name: too
+  dependencies: []
+  cache: {}
+  tags:
+    - golden
+  when: manual
+
+deploy_too:
+  except:
+    variables:
+      - $DISABLE_DEPLOY_TOO
+      - $DEPLOY_DOCKER
+  extends: .deploy_too
+
+# ECS
+.deploy_too_ecs:
+  extends: .deploy_too
+  only:
+    refs:
+      - tags
+    variables:
+      - $DEPLOY_DOCKER
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+  services:
+    - alias: docker
+      name: itau-docker-base.depdes.artifactory.prod.cloud.ihf/docker:dind
+      command: ["--insecure-registry=itau-docker-applications.depdes.artifactory.prod.cloud.ihf"]
+
+deploy_too_ecs:
+  extends: .deploy_too_ecs
+  except:
+    variables:
+      - $DISABLE_DEPLOY_TOO

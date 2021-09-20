@@ -1,0 +1,43 @@
+stages:
+  - test_api
+
+.run_collection_definition: 
+  stage: test_api
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/newman:latest
+  allow_failure: true
+  script:
+    - cp -a /home/docker/report/. ./public/
+    - newman run test/collection-test.json -e test/environment-parameters-$environment.json -r cli,htmlextra --reporter-htmlextra-export ./public/$environment/index.html --reporter-htmlextra-logs --reporter-htmlextra-browserTitle "Report:${CI_PROJECT_NAME} [$environment]" --reporter-htmlextra-title "${CI_PROJECT_NAME} [$environment]" --reporter-htmlextra-showEnvironmentData --reporter-htmlextra-timezone "America/Sao_Paulo"
+   #mkdir -p public/$CI_ENVIRONMENT_NAME && 
+  artifacts:
+    paths:
+    - public/
+    when:
+      always
+    expire_in: 1 week
+  when: delayed
+  start_in: 45 seconds
+  tags:
+    - ci
+  cache:
+    paths:
+      - public
+  except:
+    variables:
+      - $DISABLE_TEST
+
+
+test_api_dev:
+  extends: .run_collection_definition
+  variables:
+    environment: dev
+  only:
+    - master
+
+test_api_hom:
+  extends: .run_collection_definition
+  variables:
+    environment: hom
+  only:
+    - tags
+      

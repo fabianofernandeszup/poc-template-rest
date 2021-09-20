@@ -1,0 +1,35 @@
+stages:
+  - publish
+
+variables:
+  repositorio_destino: libs-release-local 
+
+.publish_artifactory:  
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/maven:$MAVEN_VERSION
+  stage: publish
+  script:
+   - mvn jar:jar deploy:deploy -s settings.xml -DaltDeploymentRepository=repo-libs::default::$artifactory_url/$repositorio_destino
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ./target
+  except:
+    variables:
+      - $DISABLE_PUBLISH
+  tags:
+    - ci
+
+publish_ci:
+  extends: .publish_artifactory
+  variables:
+    artifactory_url: $ARTIFACTORY_CI_URL
+  only: 
+   - master
+
+publish_cd:
+  extends: .publish_artifactory
+  variables:
+    artifactory_url: $ARTIFACTORY_CD_URL
+  only: 
+   - tags

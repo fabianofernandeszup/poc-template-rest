@@ -1,0 +1,26 @@
+include:
+  - local: /ci/python.yaml
+  - local: /ci/lint/docker.yaml
+  - local: /ci/build/docker_image.yaml                # as package
+  - local: /ci/inspection/security_docker.yaml
+  - local: /ci/publish/docker_golden.yaml
+
+stages:
+  - lint                 # docker_best_practice (branches)
+  - build                # build (branches) ... utiliza extends.
+  - test                 # tests (branches) ... utiliza extends.
+  - package              # docker_build
+  - inspection           # security (branches e tags)
+  - publish              # ... extends
+  - publish_snapshot     # puclish snapshot
+  - publish_latest       # publish_latest (master e tags)
+
+# Custom Jobs
+docker_build:
+  extends: .docker_build
+  stage: package
+
+security_docker:
+  variables:
+    IMAGE_TAR: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_NAME}.tar
+    IMAGE_NAME: ${CI_PROJECT_NAME}:${CI_COMMIT_REF_NAME}

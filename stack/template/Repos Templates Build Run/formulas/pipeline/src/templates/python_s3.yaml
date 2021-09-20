@@ -1,0 +1,16 @@
+include:
+  - local: /ci/python.yaml
+  - local: /ci/package/zip.yaml
+  - local: /ci/publish/artifactory.yaml
+  - local: /cd/deploy_aws.yaml
+
+stages:
+  - build                 
+  - test                  
+  - inspection            
+  - package               # jobs: package (branches e tags)
+  - publish               # jobs: publish (tags)
+  - deploy_dev            # jobs: deploy_dev (master)
+  - deploy_hom            # jobs: deploy_hom (tags)
+  - governance            # jobs: create_jira_ticket (tags)
+  - deploy_prd            # jobs: deploy_prd (tags)

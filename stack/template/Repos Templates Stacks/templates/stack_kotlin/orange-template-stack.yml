@@ -1,0 +1,21 @@
+name: Stack Kotlin Micronaut
+description: Stack Kotlin Micronaut by Orange Stack
+type: stack
+resources:
+  - step: scaffold
+    type: template
+    template: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987987 # SCAFFOLD MICRONAUTE
+      repo_url: http://githu.com.br/orangecom/templates-domain-service
+      repo_release: 1.0.0
+      template_name: "kotlin micronaut itau"
+      inputs_json: {}
+     inputs:
+       name: "cartao-verde"
+       org: "com.itau"
+
+  - step: s3bucket
+    type: formula
+    formula:
+      repo: https://github.com/orangestack-com/catalog-formulas/
+      release: 0.0.5
+      command: os catalog upload s3

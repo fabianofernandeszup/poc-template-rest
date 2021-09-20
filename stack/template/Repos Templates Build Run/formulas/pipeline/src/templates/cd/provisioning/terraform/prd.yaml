@@ -1,0 +1,37 @@
+stages:
+  - infra_prd
+
+
+.prd_plan:
+  extends: .plan
+  stage: infra_plan
+  only:
+    - tags
+    - branches
+  environment:
+    name: prd
+    # action: prepare
+
+prd_plan:
+  extends: .prd_plan
+  except:
+    variables:
+      - $DISABLE_INFRA_PRD
+      - $TERRAFORM_MODULE
+
+.prd_apply:
+  extends: .apply
+  stage: infra_prd
+  only:
+    - tags
+  environment:
+    name: prd
+
+prd_apply:
+  extends: .prd_apply
+  except:
+    variables:
+      - $DISABLE_INFRA_PRD
+      - $TERRAFORM_MODULE
+  dependencies: ["prd_plan"]
+  

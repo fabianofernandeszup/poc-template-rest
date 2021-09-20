@@ -1,0 +1,19 @@
+stages:
+  - governance
+
+# create_jira_ticket:
+#   image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/jira_ticket:latest
+#   stage: governance
+#   allow_failure: false
+#   script:
+#     - echo "Creating jira ticket..."
+#   dependencies: []
+#   cache: {}
+#   only:
+#     - tags
+#   except:
+#     variables:
+#       - $DISABLE_GOVERNANCE
+#   tags:
+#     - golden
+#   when: manual

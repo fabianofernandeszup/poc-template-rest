@@ -1,0 +1,10 @@
+include:
+  - local: /ci/android.yaml
+
+variables:
+  SDK_VERSION: "29"
+
+stages:
+  - build                 # jobs: build
+  - lint                  # jobs: lint
+  - inspection            # jobs: quality_check (branches), quality (tags), security_check (branches), security (tags)

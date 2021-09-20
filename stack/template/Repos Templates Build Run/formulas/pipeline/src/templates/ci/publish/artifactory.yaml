@@ -1,0 +1,30 @@
+stages:
+  - publish
+
+publish:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/publish_artifactory:latest
+  stage: publish
+  script:
+    - echo "Publishing"
+  only:
+    - master
+    - tags
+  except:
+    variables:
+      - $DISABLE_PUBLISH
+  tags:
+    - golden
+  cache: {}
+
+.publish_tags:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/publish_artifactory:latest
+  script:
+    - echo "Publishing"
+  only:
+    - tags
+  except:
+    variables:
+      - $DISABLE_PUBLISH
+  tags:
+    - golden
+  cache: {}

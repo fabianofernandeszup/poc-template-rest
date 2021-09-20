@@ -1,0 +1,15 @@
+variables:
+  SONAR_OPTS: ""
+  
+include:
+  - local: /ci/build/dotnet_core.yaml
+  - local: /ci/test/dotnet_core.yaml
+  - local: /ci/inspection/security.yaml
+  - local: /ci/inspection/quality.yaml
+
+# Customizations
+quality_check:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/sonar_inspection:latest-dotnetcore
+  
+quality:
+  image: itau-docker-golden.depdes.artifactory.prod.cloud.ihf/sonar_inspection:latest-dotnetcore

@@ -1,0 +1,57 @@
+stages:
+  - build
+
+variables:
+  NODE_VERSION: 15.14.0
+  ANGULAR_BUILD_PARAMETERS: ""
+  ANGULAR_PROJECT_PATH: "."
+
+.build_template: &build_template
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/node:$NODE_VERSION
+  stage: build
+  script:
+    - cd $ANGULAR_PROJECT_PATH
+    - npm install --unsafe-perm --legacy-peer-deps
+    - ./node_modules/@angular/cli/bin/ng build --configuration=$ENVIRONMENT --deploy-url /$CI_PROJECT_NAME $ANGULAR_BUILD_PARAMETERS
+    - mkdir -p ./$CI_PROJECT_NAME/
+    - cp -a ./dist/. ./$CI_PROJECT_NAME/
+    - mkdir -p ./build/$ENVIRONMENT
+    - cp -R ./$CI_PROJECT_NAME/. ./build/$ENVIRONMENT
+  allow_failure: false
+  tags:
+    - ci
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - $ANGULAR_PROJECT_PATH/build/
+  cache:
+    key: build
+    paths:
+      - $ANGULAR_PROJECT_PATH/node_modules/
+    policy: pull-push
+  except:
+    variables:
+      - $DISABLE_BUILD
+
+build_dev:
+  variables:
+    ENVIRONMENT: dev
+  only:
+    - branches
+  <<: *build_template
+
+build_hom:
+  variables:
+    ENVIRONMENT: hom
+  only:
+    - release
+    - tags
+  <<: *build_template
+
+build_prd:
+  variables:
+    ENVIRONMENT: prd
+  only:
+    - release
+    - tags
+  <<: *build_template

@@ -1,0 +1,5 @@
+include:
+  - local: /ci/build/nodejs.yaml
+  - local: /ci/test/nodejs.yaml
+  - local: /ci/inspection/quality.yaml
+  - local: /ci/inspection/security.yaml

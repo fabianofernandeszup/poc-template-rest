@@ -1,0 +1,3 @@
+name=notification
+visibility_timeout=300
+retention_period=300

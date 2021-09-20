@@ -1,0 +1,33 @@
+stages:
+  - build
+  
+variables:
+  GRADLE_VERSION: "jdk11"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradlehome"
+  
+build:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/gradle:$GRADLE_VERSION
+  stage: build
+  script:
+    - 'if [[ "$USE_SNAPSHOT_ON_BRANCH" = true && ! -f "gradle.properties" ]]; then echo "missing gradle.properties, expecting projectVersion should be inside gradle.properties"; exit 1; fi'
+    - 'if [[ "$USE_SNAPSHOT_ON_BRANCH" = true && -z "$CI_COMMIT_TAG" ]]; then VERSION=$(./gradlew properties | grep "version: " | sed "s/version: //"); SNAPSHOT="$VERSION-SNAPSHOT"; echo "building $SNAPSHOT"; sed -i "s/projectVersion=$VERSION/projectVersion=$SNAPSHOT/" gradle.properties; fi'
+    - ./gradlew build --info
+  tags:
+    - ci
+  allow_failure: false
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - ./build/libs
+      - gradle.properties
+  cache:
+    key: build
+    paths:
+      - .gradle
+      - ./build/classes
+      - .gradlehome/wrapper
+      - .gradlehome/caches/modules*
+  except:
+    variables:
+      - $DISABLE_BUILD

@@ -1,0 +1,14 @@
+stages:
+  - lint
+
+variables:
+  TERRAFORM_VERSION: 0.11.14
+
+terraform:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/terraform:$TERRAFORM_VERSION
+  stage: lint
+  tags:
+    - ci
+  script:
+    - tflint
+  allow_failure: false

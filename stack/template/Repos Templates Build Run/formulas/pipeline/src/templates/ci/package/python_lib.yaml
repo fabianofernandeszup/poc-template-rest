@@ -1,0 +1,33 @@
+stages:
+  - package
+
+variables:
+  PYTHON_VERSION: 3.8.2
+  repositorio_destino: pypi-local
+  egg_info_file: "${CI_PROJECT_NAME}.egg-info"
+
+.package_python_lib:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/python:$PYTHON_VERSION
+  stage: package
+  script:
+    - python3 setup.py sdist
+  artifacts:
+      expire_in: 1 day
+      paths:
+        - ./dist
+        - ./$egg_info_file
+  tags:
+    - ci
+  except:
+    variables:
+      - $DISABLE_PACKAGE
+
+package:
+  extends: .package_python_lib
+  only:
+    - tags
+
+package_snapshot:
+  extends: .package_python_lib
+  only:
+    - branches

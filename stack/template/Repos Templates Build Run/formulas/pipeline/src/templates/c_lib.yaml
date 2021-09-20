@@ -1,0 +1,12 @@
+include:
+  - local: /ci/c.yaml
+  - local: /ci/publish/conan_lib.yaml
+
+variables:
+  CONAN_VERSION: 1.27.1
+
+stages:
+  - build                 # jobs: build (branches)
+  - inspection            # jobs: quality_check (branches), quality (master)
+  - package               # jobs: package (master)
+  - publish               # jobs: publish (master)

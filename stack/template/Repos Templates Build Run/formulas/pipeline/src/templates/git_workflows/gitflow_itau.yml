@@ -1,0 +1,63 @@
+tag_helper:
+    only:
+        - master
+
+build:
+    only:
+        - branches
+        - tags
+    except:
+        - master
+
+test:
+    only:
+        - branches
+        - tags
+    except:
+        - master
+
+inspection:
+    only:
+        - branches
+        - tags
+    except:
+        - master
+
+package:
+    only:
+        - develop
+        - tags
+    except:
+        - master
+
+publish:
+    only:
+        - develop
+        - tags
+    except:
+        - master
+
+deploy_dev:
+    only:
+        - develop
+        - tags
+    except:
+        - master
+        
+deploy_hom:
+    only:
+        - tags
+    except:
+        - branches
+
+governance:
+    only:
+        - tags
+    except:
+        - branches
+
+deploy_prod:
+    only:
+        - tags
+    except:
+        - branches

@@ -1,0 +1,47 @@
+stages:
+  - build
+
+variables:
+  JSON_FILE: sfn_definitions.json
+
+.build_step_functions:
+  image: itau-docker-base.depdes.artifactory.prod.cloud.ihf/alpine:3.12.0
+  stage: build
+  script:
+    - ENV=$(echo $CI_JOB_NAME | awk -F_ '{print $2}')
+    - mkdir -p package/$ENV
+    - envsubst < $JSON_FILE > package/$ENV/$JSON_FILE
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - package
+  cache: {}
+  except:
+    variables:
+      - $DISABLE_BUILD
+  tags:
+    - ci
+
+build_dev:
+  extends: .build_step_functions
+  variables:
+    ACCOUNT_ID: 571571740496
+    REGION: us-east-1 
+  only:
+    - master
+
+build_hom:
+  extends: .build_step_functions
+  variables:
+    ACCOUNT_ID: 853597947141
+    REGION: us-east-1 
+  only:
+    - tags
+
+build_prd:
+  extends: .build_step_functions
+  variables:
+    ACCOUNT_ID: 131542353379
+    REGION: us-east-1 
+  only:
+    - tags
