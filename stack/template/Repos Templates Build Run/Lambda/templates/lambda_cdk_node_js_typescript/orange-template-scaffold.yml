@@ -1,0 +1,11 @@
+name: "Lambda CDK NodeJs Typescript"
+description: Just a simple Template
+type: scaffold
+haveSample: true
+tags:
+  - "Lambda CDK NodeJs Typescript-scaffold"
+inputs:
+  - label: "Name Project"
+    type: text
+    name: "NAME_PROJECT"
+    default: "HelloWorld"

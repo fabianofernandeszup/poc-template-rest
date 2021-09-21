@@ -1,3 +1,7 @@
-name=notification
+name_sqs_notificacao=notification
+visibility_timeout_sqs_notificacao=300
+retention_period_sqs_notificacao=300
+
+name_sqs_notificacao=notification
 visibility_timeout=300
 retention_period=300
