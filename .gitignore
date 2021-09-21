@@ -7,7 +7,6 @@
 *.dylib
 
 /bin/
-**/bin/*
 /dist/
 **/dist/*
 /test/tests.*
