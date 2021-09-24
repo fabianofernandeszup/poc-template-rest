@@ -1,5 +1,5 @@
 {
-  "name": "{{NAME_PROJECT}}",
+  "name": "{{NAME_PROJECT|to_kebab}}",
   "version": "0.1.0",
   "bin": {
     "{{NAME_PROJECT|to_kebab}}": "bin/{{NAME_PROJECT|to_kebab}}.js"
