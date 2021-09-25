@@ -1,5 +1,0 @@
-include:
-  - local: /ci/build/gradle.yaml
-  - local: /ci/test/gradle.yaml
-  - local: /ci/inspection/quality.yaml
-  - local: /ci/inspection/security.yaml

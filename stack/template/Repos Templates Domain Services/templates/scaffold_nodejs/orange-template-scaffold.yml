@@ -1,7 +1,0 @@
-ori: ori::template::132456-654654-654654-65464::asdaasd-654654-987987-987989
-name: Template Scaffold NodeJS
-description: Template Scaffold NodeJS
-inputs:
-  - label: 'Base name:'
-    name: base_name
-    type: text

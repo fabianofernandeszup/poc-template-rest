@@ -1,7 +1,0 @@
-include:
-  - local: /ci/dotnet_framework.yaml
-
-stages:
-  - build
-  - test
-  - inspection

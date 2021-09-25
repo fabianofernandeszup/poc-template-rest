@@ -1,8 +1,0 @@
-{
-  "Parameters": {
-    "sts_environment": "development",
-    "sts_endpoint": "https://des-sts-int.mbi.cloud.ihf/api/oauth/token",
-    "sts_aws_secret_name": "/secret/sts",
-    "sts_client_id": "d6e3d0b4-d116-4d6f-a900-fce6705093c7"
-  }
-}

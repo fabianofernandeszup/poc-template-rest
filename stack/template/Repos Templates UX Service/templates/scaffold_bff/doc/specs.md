@@ -1,1 +1,0 @@
-# template-stack-kotlin-micronaut

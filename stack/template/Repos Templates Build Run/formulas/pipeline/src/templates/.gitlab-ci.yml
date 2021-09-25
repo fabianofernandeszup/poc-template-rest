@@ -1,8 +1,0 @@
-include:
-  - project: 'OA4/templates'
-    file: 'ci/lint/yaml.yaml'
-
-yaml:
-  script:
-    - npm install -g yaml-lint
-    - yamllint '**/*.yaml'

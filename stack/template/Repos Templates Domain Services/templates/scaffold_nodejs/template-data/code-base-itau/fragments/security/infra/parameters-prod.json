@@ -1,8 +1,0 @@
-{
-  "Parameters": {
-    "sts_environment": "production",
-    "sts_endpoint": "https://pro-sts-int.mbi.cloud.ihf/api/oauth/token",
-    "sts_aws_secret_name": "$CLI_STS_AWS_SECRET_PROD",
-    "sts_client_id": "$CLI_STS_CLIENT_ID_PROD"
-  }
-}

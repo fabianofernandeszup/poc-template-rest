@@ -1,6 +1,0 @@
-include:
-  - local: /ci/lint/gradle_detekt.yaml
-  - local: /ci/build/gradle.yaml
-  - local: /ci/test/gradle.yaml
-  - local: /ci/inspection/quality.yaml
-  - local: /ci/inspection/security.yaml
